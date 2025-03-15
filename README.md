@@ -14,8 +14,3 @@ Inspired by [FriendsOfAdonis](https://github.com/FriendsOfAdonis/FriendsOfAdonis
 <!-- badges -->
 
 </div>
-
-
-## License
-
-[MIT licensed](LICENSE.md).
