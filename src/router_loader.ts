@@ -50,6 +50,11 @@ export class RouterLoader {
       return
     }
 
+    // already has metadata
+    if (metadata.path) {
+      return
+    }
+
     OperationMetadataStorage.mergeMetadata(
       target.prototype,
       {
