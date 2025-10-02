@@ -13,7 +13,7 @@ export function extractNameFromThunk(thunk: Function): string | undefined {
   if (!res || res.length < 2) {
     return
   }
-  return res[1]
+  return res[1].trim()
 }
 
 export function set<T extends object, K extends string>(object: T, key: K, value: unknown) {
