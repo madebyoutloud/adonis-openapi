@@ -1,0 +1,65 @@
+{
+  "name": "@outloud/adonis-openapi",
+  "type": "module",
+  "version": "1.1.0",
+  "description": "Schedule cron jobs in AdonisJS 6/7.",
+  "author": "Outloud <hello@outloud.co>",
+  "contributors": [
+    "Andrej Adamcik"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/madebyoutloud/adonis-openapi#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madebyoutloud/adonis-openapi.git"
+  },
+  "files": [
+    "build"
+  ],
+  "exports": {
+    ".": "./build/src/index.js",
+    "./hooks": "./build/src/hooks.js",
+    "./provider": "./build/providers/openapi.provider.js",
+    "./commands": "./build/commands/main.js"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "copy:templates": "copyfiles \"stubs/**/*.stub\" build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . ",
+    "lint:fix": "eslint --fix .",
+    "quick:test": "node --import=./tsnode.esm.js --enable-source-maps bin/test.ts",
+    "pretest": "pnpm run lint",
+    "test": "c8 pnpm run quick:test",
+    "build": "tsdown && pnpm run copy:templates && pnpm run index:commands",
+    "release": "release-it",
+    "index:commands": "NODE_OPTIONS='--import=reflect-metadata' adonis-kit index build/commands"
+  },
+  "peerDependencies": {
+    "@adonisjs/core": "^6 || ^7",
+    "@outloud/adonis-openapi-generator": "^1"
+  },
+  "peerDependenciesMeta": {
+    "@outloud/adonis-openapi-generator": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^8.0.0",
+    "@adonisjs/core": "~7.0.0",
+    "@adonisjs/tsconfig": "^1.4.1",
+    "@outloud/adonis-openapi-generator": "workspace:^",
+    "@outloud/eslint-config": "^3.0.3",
+    "@swc/core": "^1.13.3",
+    "@types/node": "^24.2.1",
+    "copyfiles": "^2.4.1",
+    "eslint": "^10.2.1",
+    "reflect-metadata": "^0.2.2",
+    "release-it": "^19.0.4",
+    "tsdown": "0.21.0-beta.2",
+    "typescript": "~5.9.2"
+  },
+  "dependencies": {
+    "openapi-types": "^12.1.3"
+  }
+}

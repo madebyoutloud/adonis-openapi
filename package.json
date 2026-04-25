@@ -1,0 +1,7 @@
+{
+  "devDependencies": {
+    "@outloud/eslint-config": "^3.0.3",
+    "eslint": "^10.2.1",
+    "typescript": "^5.9.2"
+  }
+}

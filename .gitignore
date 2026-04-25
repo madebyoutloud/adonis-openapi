@@ -1,0 +1,13 @@
+node_modules
+coverage
+test/__app
+.DS_STORE
+.idea
+.vscode/
+*.log
+build
+dist
+
+.npmrc
+playground
+tests

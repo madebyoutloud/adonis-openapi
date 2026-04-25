@@ -1,0 +1,10 @@
+{
+  "git": {
+    "tagName": "v${version}",
+    "commitMessage": "v${version}",
+    "tagAnnotation": "v${version}"
+  },
+  "npm": {
+    "publish": false
+  }
+}

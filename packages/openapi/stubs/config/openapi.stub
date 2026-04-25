@@ -1,0 +1,13 @@
+{{{
+  exports({ to: app.configPath('openapi.ts') })
+}}}
+import { defineConfig } from '@outloud/adonis-openapi'
+
+const openapiConfig = defineConfig({
+  document: {},
+  generator: {
+    resolve: import.meta.resolve
+  }
+})
+
+export default openapiConfig

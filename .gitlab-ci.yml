@@ -1,0 +1,12 @@
+variables:
+  PIPELINE:
+    description: "Specify which pipeline to run"
+    value: publish
+    options: [publish]
+
+stages: [publish]
+
+include:
+  - component: $OUTLOUD_CI/publish-npm@4
+    inputs:
+      registry: [npm, gitlab]

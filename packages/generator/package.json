@@ -1,0 +1,54 @@
+{
+  "name": "@outloud/adonis-openapi-generator",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "author": "Outloud <hello@outloud.co>",
+  "contributors": [
+    "Andrej Adamcik"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/madebyoutloud/adonis-openapi#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madebyoutloud/adonis-openapi.git"
+  },
+  "files": [
+    "build"
+  ],
+  "exports": {
+    ".": "./build/index.js",
+    "./src": "./src/index.ts"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . ",
+    "lint:fix": "eslint --fix .",
+    "test": "vitest",
+    "build": "tsdown",
+    "release": "release-it"
+  },
+  "dependencies": {
+    "@outloud/utils": "^0.1.17",
+    "defu": "^6.1.7",
+    "fast-deep-equal": "^3.1.3",
+    "openapi-types": "^12.1.3",
+    "ts-morph": "^28.0.0"
+  },
+  "devDependencies": {
+    "@adonisjs/core": "^7.3.1",
+    "@adonisjs/lucid": "^22.4.2",
+    "@adonisjs/tsconfig": "^2.0.0",
+    "@outloud/eslint-config": "^3.0.3",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.1",
+    "reflect-metadata": "^0.2.2",
+    "tsdown": "0.21.0-beta.2",
+    "typescript": "^5.9.2",
+    "vitest": "^4.1.5"
+  },
+  "peerDependencies": {
+    "@adonisjs/core": "^6 || ^7"
+  }
+}

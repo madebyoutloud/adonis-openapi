@@ -1,0 +1,11 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.package.json",
+  "compilerOptions": {
+    "rootDir": "./",
+    "outDir": "./build",
+    "stripInternal": true,
+    "emitDecoratorMetadata": true,
+    "verbatimModuleSyntax": true
+  },
+  "exclude": ["dist", "build"]
+}
