@@ -1,7 +1,7 @@
 {
   "name": "@outloud/adonis-openapi",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "OpenAPI for AdonisJS 6/7.",
   "author": "Outloud <hello@outloud.co>",
   "contributors": [
@@ -29,11 +29,7 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint . ",
     "lint:fix": "eslint --fix .",
-    "quick:test": "node --import=./tsnode.esm.js --enable-source-maps bin/test.ts",
-    "pretest": "pnpm run lint",
-    "test": "c8 pnpm run quick:test",
     "build": "tsdown && pnpm run copy:templates && pnpm run index:commands",
-    "release": "release-it",
     "index:commands": "NODE_OPTIONS='--import=reflect-metadata' adonis-kit index build/commands"
   },
   "peerDependencies": {
@@ -56,7 +52,6 @@
     "copyfiles": "^2.4.1",
     "eslint": "^10.2.1",
     "reflect-metadata": "^0.2.2",
-    "release-it": "^19.0.4",
     "tsdown": "0.21.0-beta.2",
     "typescript": "~5.9.2"
   },

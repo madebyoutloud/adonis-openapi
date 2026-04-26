@@ -1,7 +1,13 @@
 {
+  "version": "1.0.0-beta.0",
+  "scripts": {
+    "release": "release-it"
+  },
   "devDependencies": {
     "@outloud/eslint-config": "^3.0.3",
+    "@release-it/bumper": "^7.0.5",
     "eslint": "^10.2.1",
+    "release-it": "^19.0.4",
     "typescript": "^5.9.2"
   }
 }

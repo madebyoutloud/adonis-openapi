@@ -1,6 +1,6 @@
 {
   "name": "@outloud/adonis-openapi-generator",
-  "version": "1.0.0",
+  "version": "1.0.0-beta.0",
   "description": "",
   "type": "module",
   "author": "Outloud <hello@outloud.co>",
@@ -25,8 +25,7 @@
     "lint": "eslint . ",
     "lint:fix": "eslint --fix .",
     "test": "vitest",
-    "build": "tsdown",
-    "release": "release-it"
+    "build": "tsdown"
   },
   "dependencies": {
     "@outloud/utils": "^0.1.17",

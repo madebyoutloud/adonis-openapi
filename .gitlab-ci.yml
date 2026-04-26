@@ -9,4 +9,13 @@ stages: [publish]
 include:
   - component: $OUTLOUD_CI/publish-npm@4
     inputs:
-      registry: [npm, gitlab]
+      name: openapi
+      dir: packages/openapi
+      script:
+        - ( cd ../generator && pnpm run build )
+        - pnpm run build
+
+  - component: $OUTLOUD_CI/publish-npm@4
+    inputs:
+      name: generator
+      dir: packages/generator
