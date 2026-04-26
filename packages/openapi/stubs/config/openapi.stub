@@ -2,11 +2,26 @@
   exports({ to: app.configPath('openapi.ts') })
 }}}
 import { defineConfig } from '@outloud/adonis-openapi'
+import env from '#start/env'
+import packageJson from '../package.json' with { type: 'json' }
 
 const openapiConfig = defineConfig({
-  document: {},
+  enabled: true,
+  document: {
+    info: {
+      title: env.get('APP_DISPLAY_NAME', packageJson.name),
+      version: packageJson.version,
+    },
+    servers: [
+      { url: env.get('APP_URL', `http://localhost:${env.get('PORT')}`) },
+    ],
+  },
+  ui: {
+    provider: 'scalar',
+  },
   generator: {
-    resolve: import.meta.resolve
+    resolve: import.meta.resolve,
+    routes: true,
   }
 })
 

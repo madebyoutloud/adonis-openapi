@@ -2,7 +2,7 @@ import type { OpenAPIV3_1 } from 'openapi-types'
 import equal from 'fast-deep-equal'
 import type { Context } from './context.ts'
 import type { Reference } from './reference.ts'
-import type { RouteSchemaType, SchemaObject } from './types.ts'
+import type { Meta, RouteSchemaType, SchemaObject } from './types.ts'
 import type { Component } from './component.ts'
 
 interface RouteData {
@@ -16,7 +16,12 @@ const routeType = {
 }
 
 export class Route {
-  constructor(public name: string, public data: RouteData, private context: Context) {
+  constructor(
+    public name: string,
+    public data: RouteData,
+    private context: Context,
+    private meta: Meta,
+  ) {
 
   }
 
@@ -82,7 +87,12 @@ export class Route {
     }
 
     return Object.fromEntries(methods.map((method) => {
-      return [method.toLowerCase(), operation]
+      return [
+        method.toLowerCase(), {
+          ...operation,
+          ...this.meta.get(method, this.data.pattern),
+        },
+      ]
     }))
   }
 
@@ -97,7 +107,7 @@ export class Route {
       required: true,
       content: {
         [contentType]: {
-          schema: data.component?.toOpenapi() ?? data.schema,
+          schema: data.component?.toOpenAPI() ?? data.schema,
         },
       },
     }
@@ -114,7 +124,7 @@ export class Route {
         description: 'OK',
         content: {
           'application/json': {
-            schema: data.component?.toOpenapi() ?? data.schema,
+            schema: data.component?.toOpenAPI() ?? data.schema,
           },
         },
       },

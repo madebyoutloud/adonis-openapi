@@ -1,5 +1,6 @@
 import type TsMorph from 'ts-morph'
-import type { LucidModel } from '@adonisjs/lucid/types/model'
+import type { ComputedOptions, LucidModel, ModelColumnOptions } from '@adonisjs/lucid/types/model'
+import type { RelationshipsContract } from '@adonisjs/lucid/types/relations'
 import type { Handler, SchemaObject } from '../types.ts'
 import { Reference } from '../reference.ts'
 import type { Context } from '../context.ts'
@@ -42,9 +43,15 @@ class LucidSerializer {
   }
 
   async toSchema(): Promise<SchemaObject> {
-    await Promise.all(this.Model.$columnsDefinitions.keys().map((name) => this.column(name)))
-    await Promise.all(this.Model.$computedDefinitions.keys().map((name) => this.column(name, true)))
-    await Promise.all(this.Model.$relationsDefinitions.keys().map((name) => this.relation(name)))
+    await Promise.all(this.Model.$columnsDefinitions.entries().map(([name, options]) => {
+      return this.column(name, options)
+    }))
+    await Promise.all(this.Model.$computedDefinitions.entries().map(([name, options]) => {
+      return this.column(name, options)
+    }))
+    await Promise.all(this.Model.$relationsDefinitions.entries().map(([name, options]) => {
+      return this.relation(name, options)
+    }))
 
     if (this.properties.length) this.schema.properties = Object.fromEntries(this.properties)
     if (this.required.length) this.schema.required = this.required
@@ -52,18 +59,22 @@ class LucidSerializer {
     return this.schema
   }
 
-  private async column(name: string, computed = false) {
+  private async column(name: string, options: ModelColumnOptions | ComputedOptions) {
+    if (!options.serializeAs) return
+
+    // const isComputed = 'columnName' in options
     const prop = this.context.property(name, this.type)
-    const serializeName = this.naming.serializedName(this.Model, name)
 
-    this.properties.push([serializeName, await this.context.child(prop.type).toSchema()])
+    this.properties.push([options.serializeAs, await this.context.child(prop.type).toSchema()])
 
-    if (!computed || !this.context.isOptional(prop.prop)) {
-      this.required.push(serializeName)
+    if (!this.context.isOptional(prop.prop)) {
+      this.required.push(options.serializeAs)
     }
   }
 
-  private async relation(name: string) {
+  private async relation(name: string, options: RelationshipsContract) {
+    if (!options.serializeAs) return
+
     const prop = this.context.property(name, this.type)
     const referenceType = prop.type.getNonNullableType()
     const match = referenceType.getText().match(relationRegex)
@@ -72,9 +83,6 @@ class LucidSerializer {
 
     const [,path, importName] = match
 
-    const contract = this.Model.$getRelation(name)
-    contract.type
-
     const file = this.context.file(`${path}.ts`)
     const type = file.getClass(importName)?.getType()
 
@@ -82,7 +90,7 @@ class LucidSerializer {
 
     let schema = await this.context.child(type).toSchema()
 
-    if (arrayRelationTypes.includes(contract.type)) {
+    if (arrayRelationTypes.includes(options.type)) {
       schema = { type: 'array', items: schema }
     } else if (prop.type.isNullable()) {
       schema = { oneOf: [schema, { type: 'null' }] }

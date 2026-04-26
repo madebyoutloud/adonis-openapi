@@ -4,9 +4,11 @@ import { fileURLToPath } from 'node:url'
 import type { OpenAPIV3_1 } from 'openapi-types'
 import type { Project } from 'ts-morph'
 import type TsMorph from 'ts-morph'
+import defu from 'defu'
+import { omit } from '@outloud/utils'
 import { Route } from './route.ts'
 import { Context } from './context.ts'
-import type { GeneratorOptions, Resolver, RouteInfo } from './types.ts'
+import type { GeneratorOptions, RouteInfo } from './types.ts'
 import { Components } from './components.js'
 import { Handlers } from './handlers.js'
 import { defaultHandlers } from './constants.ts'
@@ -20,13 +22,17 @@ export class Generator {
   private components: Components
   private paths: OpenAPIV3_1.PathsObject = {}
 
-  constructor(public root: URL, public options: GeneratorOptions) {
+  constructor(public options: GeneratorOptions) {
     this.components = new Components(this.rootPath)
     this.handlers = new Handlers(defaultHandlers)
   }
 
+  get config() {
+    return this.options.config
+  }
+
   get rootPath() {
-    return fileURLToPath(this.root)
+    return fileURLToPath(this.options.root)
   }
 
   context(type = this.type) {
@@ -36,13 +42,14 @@ export class Generator {
       handlers: this.handlers,
       root: this.rootPath,
       node: this.registry,
-      resolve: this.options.resolve,
+      resolve: this.options.config.resolve,
     })
   }
 
   async generate() {
     await this.loadProject()
     await this.loadRoutes()
+    this.options.meta.compute()
 
     for (const route of this.routes) {
       await this.processRoute(route)
@@ -53,7 +60,7 @@ export class Generator {
 
   private async save() {
     const document = this.toDocument()
-    const json = JSON.stringify(document, null, this.options.debug ? 2 : 0)
+    const json = JSON.stringify(document, null, this.options.config.debug ? 2 : 0)
 
     await fs.promises.writeFile(
       join(this.rootPath, '.adonisjs/openapi.json'),
@@ -86,23 +93,43 @@ export class Generator {
     this.routes = Object.entries(routes as Record<string, RouteInfo>)
       .map(([name, info]) => {
         const types = context.propType([name, 'types'])
-        return new Route(name, info, this.context(types))
+        return new Route(name, info, this.context(types), this.options.meta)
       })
   }
 
   private toDocument(): OpenAPIV3_1.Document {
-    return {
+    return defu(omit(this.options.document, ['servers']), {
       components: {
         schemas: this.components.toSchemas(),
       },
       openapi: '3.1.0',
-      info: { title: 'AdonisJS API', version: '1.0.0' },
-      servers: [{ url: 'http://localhost:3333' }],
       paths: this.paths,
+    }) as OpenAPIV3_1.Document
+  }
+
+  private validateRoute(route: Route) {
+    if (this.config.routes === true) return true
+
+    if (this.config.routes === 'auto') {
+      const method = route.data.methods[0]!
+
+      return this.options.meta.get(method, route.data.pattern)?.summary !== undefined
     }
+
+    if (this.config.routes.include) {
+      return this.config.routes.include.includes(route.data.pattern)
+    }
+
+    if (this.config.routes.exclude) {
+      return !this.config.routes.exclude.includes(route.data.pattern)
+    }
+
+    return true
   }
 
   private async processRoute(route: Route) {
+    if (!this.validateRoute(route)) return
+
     const data = this.paths[route.path] ?? {}
     Object.assign(data, await route.toPathItem())
 

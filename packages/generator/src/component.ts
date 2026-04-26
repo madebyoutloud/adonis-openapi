@@ -8,7 +8,7 @@ export class Component {
 
   constructor(public reference: Reference, public schema: SchemaObject) {}
 
-  toOpenapi() {
+  toOpenAPI() {
     const schema = {
       toJSON: () => this.toRef(),
     } as any as OpenAPIV3_1.ReferenceObject

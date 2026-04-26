@@ -23,7 +23,23 @@ export interface Handler {
 
 export type Resolver = (specifier: string, parent?: string | URL) => string
 
-export interface GeneratorOptions {
+export interface Meta {
+  compute(): void
+  get(method: string, path: string): OpenAPIV3_1.OperationObject | undefined
+}
+
+export interface GeneratorConfig {
   resolve: Resolver
   debug?: boolean
+  routes: true | 'auto' | {
+    include?: string[]
+    exclude?: string[]
+  }
+}
+
+export interface GeneratorOptions {
+  root: URL
+  config: GeneratorConfig
+  document: Partial<OpenAPIV3_1.Document>
+  meta: Meta
 }

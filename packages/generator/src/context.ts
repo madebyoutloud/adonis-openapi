@@ -128,12 +128,13 @@ export class Context {
     if (!type.isUnion() && reference) {
       const data = await this.withRef(reference, () => this.$toSchema(type))
 
-      return data.component.toOpenapi()
+      return data.component.toOpenAPI()
     }
 
     return await this.$toSchema(type)
   }
 
+  // eslint-disable-next-line complexity
   private async $toSchema(type: TsMorph.Type): Promise<SchemaObject> {
     if (type.isUnion()) return this.unionToSchema(type)
 
@@ -200,7 +201,7 @@ export class Context {
   }
 
   async objectToSchema(type: TsMorph.Type): Promise<SchemaObject> {
-    const toJSON = type.getProperty('toOpenapi') ?? type.getProperty('toJSON')
+    const toJSON = type.getProperty('toOpenAPI') ?? type.getProperty('toJSON')
     if (toJSON) return this.jsonToSchema(toJSON)
 
     const result: SchemaObject = { type: 'object' }
