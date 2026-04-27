@@ -13,7 +13,7 @@ const openapiConfig = defineConfig({
       version: packageJson.version,
     },
     servers: [
-      { url: env.get('APP_URL', `http://localhost:${env.get('PORT')}`) },
+      { url: env.get('APP_URL', 'http://localhost:' + env.get('PORT')) },
     ],
   },
   ui: {
