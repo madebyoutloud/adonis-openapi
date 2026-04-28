@@ -12,6 +12,6 @@ export async function configure(command: Configure) {
       .addProvider('@outloud/adonis-openapi/provider')
       .addCommand('@outloud/adonis-openapi/commands')
       .addMetaFile('.adonisjs/openapi.json', false)
-      .addAssemblerHook('buildStarting', '@outloud/adonis-openapi/hooks')
+      // .addAssemblerHook('buildStarting', '@outloud/adonis-openapi/hooks')
   })
 }
