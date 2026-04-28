@@ -19,3 +19,4 @@ include:
     inputs:
       name: generator
       dir: packages/generator
+      notify: false
