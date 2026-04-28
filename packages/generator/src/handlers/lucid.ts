@@ -9,13 +9,28 @@ const relationRegex = /typeof import\((?:'|")([^'"]+)(?:'|")\)\.(\w+)/
 const arrayRelationTypes = ['hasMany', 'manyToMany', 'hasManyThrough']
 
 export class LucidHandler implements Handler {
-  isLucidRow(type: TsMorph.Type) {
-    return Reference.try(type.getText())
-      ?.test('LucidRow', /@adonisjs\/lucid/) ?? false
+  isLucidRow(type: TsMorph.Type): boolean {
+    if (!type.isClass()) return false
+
+    const base = type.getBaseTypes()[0]
+    if (!base) return false
+
+    if (base.isIntersection()) {
+      return base.getIntersectionTypes()
+        .some((item) => this.isLucidRow(item))
+    }
+
+    const ref = Reference.try(base.getText())
+
+    if (ref?.test('LucidRow', /@adonisjs\/lucid/)) {
+      return true
+    }
+
+    return this.isLucidRow(base)
   }
 
-  test(type: TsMorph.Type, context: Context) {
-    return type.isClass() && !!context.findBase(type, this.isLucidRow)
+  test(type: TsMorph.Type) {
+    return this.isLucidRow(type)
   }
 
   async schema(type: TsMorph.Type, context: Context): Promise<SchemaObject> {

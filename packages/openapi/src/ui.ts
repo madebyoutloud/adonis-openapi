@@ -2,7 +2,7 @@ export interface ScalarOptions {
   proxy?: boolean | string
 }
 
-function scalar(url: string, options: ScalarOptions) {
+function scalar(url: string, options: ScalarOptions = {}) {
   const proxyUrl = typeof options.proxy === 'string' ? options.proxy : 'https://proxy.scalar.com'
 
   return `<!doctype html>

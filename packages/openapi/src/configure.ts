@@ -2,9 +2,10 @@ import path from 'node:path'
 import type Configure from '@adonisjs/core/commands/configure'
 
 export async function configure(command: Configure) {
+  const stubRoot = path.resolve(import.meta.dirname, '..', 'stubs')
   const codemods = await command.createCodemods()
 
-  await codemods.makeUsingStub(path.resolve(import.meta.dirname, '..', 'stubs'), 'config/openapi.stub', {})
+  await codemods.makeUsingStub(stubRoot, 'config/openapi.stub', {})
 
   await codemods.updateRcFile((rcFile) => {
     rcFile

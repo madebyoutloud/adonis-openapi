@@ -30,7 +30,6 @@ export interface Meta {
 
 export interface GeneratorConfig {
   resolve: Resolver
-  debug?: boolean
   routes: true | 'auto' | {
     include?: string[]
     exclude?: string[]
@@ -38,8 +37,6 @@ export interface GeneratorConfig {
 }
 
 export interface GeneratorOptions {
-  root: URL
   config: GeneratorConfig
-  document: Partial<OpenAPIV3_1.Document>
   meta: Meta
 }

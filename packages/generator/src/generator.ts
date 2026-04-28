@@ -4,8 +4,7 @@ import { fileURLToPath } from 'node:url'
 import type { OpenAPIV3_1 } from 'openapi-types'
 import type { Project } from 'ts-morph'
 import type TsMorph from 'ts-morph'
-import defu from 'defu'
-import { omit } from '@outloud/utils'
+import { catchError } from '@outloud/utils'
 import { Route } from './route.ts'
 import { Context } from './context.ts'
 import type { GeneratorOptions, RouteInfo } from './types.ts'
@@ -22,7 +21,7 @@ export class Generator {
   private components: Components
   private paths: OpenAPIV3_1.PathsObject = {}
 
-  constructor(public options: GeneratorOptions) {
+  constructor(public root: URL, public options: GeneratorOptions) {
     this.components = new Components(this.rootPath)
     this.handlers = new Handlers(defaultHandlers)
   }
@@ -32,7 +31,7 @@ export class Generator {
   }
 
   get rootPath() {
-    return fileURLToPath(this.options.root)
+    return fileURLToPath(this.root)
   }
 
   context(type = this.type) {
@@ -46,7 +45,7 @@ export class Generator {
     })
   }
 
-  async generate() {
+  async generate(save = false) {
     await this.loadProject()
     await this.loadRoutes()
     this.options.meta.compute()
@@ -55,16 +54,19 @@ export class Generator {
       await this.processRoute(route)
     }
 
-    await this.save()
+    const document = this.toDocument()
+
+    if (save) {
+      await this.save(document)
+    }
+
+    return document
   }
 
-  private async save() {
-    const document = this.toDocument()
-    const json = JSON.stringify(document, null, this.options.config.debug ? 2 : 0)
-
+  private async save(document: OpenAPIV3_1.Document) {
     await fs.promises.writeFile(
       join(this.rootPath, '.adonisjs/openapi.json'),
-      json,
+      JSON.stringify(document),
       'utf-8',
     )
   }
@@ -98,13 +100,14 @@ export class Generator {
   }
 
   private toDocument(): OpenAPIV3_1.Document {
-    return defu(omit(this.options.document, ['servers']), {
+    return {
+      openapi: '3.1.0',
+      info: { title: 'API Reference', version: '0.0.0' },
       components: {
         schemas: this.components.toSchemas(),
       },
-      openapi: '3.1.0',
       paths: this.paths,
-    }) as OpenAPIV3_1.Document
+    }
   }
 
   private validateRoute(route: Route) {
@@ -130,8 +133,14 @@ export class Generator {
   private async processRoute(route: Route) {
     if (!this.validateRoute(route)) return
 
+    const [schema, error] = await catchError(route.toPathItem())
+
+    if (error) {
+      throw new Error(`Failed to generated openapi for route: ${route.data.pattern}`, { cause: error })
+    }
+
     const data = this.paths[route.path] ?? {}
-    Object.assign(data, await route.toPathItem())
+    Object.assign(data, schema)
 
     if (!this.paths[route.path]) this.paths[route.path] = data
   }

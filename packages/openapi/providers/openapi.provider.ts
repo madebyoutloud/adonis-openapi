@@ -53,11 +53,11 @@ export default class OpenAPIProvider {
 
   private registerDocsRoute(router: Router) {
     const path = this.config.endpoints?.ui ?? '/docs'
-    const provider = ui[this.config.ui.provider]
+    const provider = ui[this.config.provider]
     const baseUrl = process.env.APP_URL ?? ''
     const specPath = `${baseUrl}${this.specPath}`
 
-    router.get(path, () => provider(specPath, this.config.ui))
+    router.get(path, () => provider(specPath, this.config.scalar))
   }
 }
 

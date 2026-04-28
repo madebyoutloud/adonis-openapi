@@ -8,7 +8,6 @@ export default defineConfig({
   outDir: './build',
   format: ['esm'],
   dts: true,
-  unbundle: true,
   platform: 'node',
   target: 'es2022',
   deps: {

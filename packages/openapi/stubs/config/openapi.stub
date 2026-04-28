@@ -7,6 +7,7 @@ import packageJson from '../package.json' with { type: 'json' }
 
 const openapiConfig = defineConfig({
   enabled: true,
+  provider: 'scalar',
   document: {
     info: {
       title: env.get('APP_DISPLAY_NAME', packageJson.name),
@@ -15,9 +16,6 @@ const openapiConfig = defineConfig({
     servers: [
       { url: env.get('APP_URL', 'http://localhost:' + env.get('PORT')) },
     ],
-  },
-  ui: {
-    provider: 'scalar',
   },
   generator: {
     resolve: import.meta.resolve,

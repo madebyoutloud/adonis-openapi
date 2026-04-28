@@ -141,7 +141,7 @@ export class Context {
     const handler = this.data.handlers.match(type, this)
     if (handler) return handler.schema(type, this)
 
-    if (type.isEnum()) console.log('ENUM')
+    // if (type.isEnum()) console.log('ENUM')
 
     if (type.isNumber() || type.isNumberLiteral()) return { type: 'number' }
     if (type.isBoolean() || type.isBooleanLiteral()) return { type: 'boolean' }
