@@ -34,20 +34,39 @@ export default class OpenAPIProvider {
   }
 
   private async getSpec(): Promise<OpenAPIV3_1.Document> {
-    const filePath = this.app.makePath('.adonisjs/openapi.json')
-    const spec = JSON.parse(await fs.promises.readFile(filePath, 'utf-8'))
+    let spec: OpenAPIV3_1.Document
+
+    if (this.app.inDev) {
+      const { Generator } = await import('@outloud/adonis-openapi-generator')
+
+      spec = await new Generator(this.app.appRoot, {
+        config: this.config.generator,
+        meta,
+      }).generate()
+    } else {
+      const filePath = this.app.makePath('.adonisjs/openapi.json')
+      spec = JSON.parse(await fs.promises.readFile(filePath, 'utf-8'))
+    }
 
     return defu(this.config.document, spec) as OpenAPIV3_1.Document
   }
 
+  private async getCachedSpec(): Promise<OpenAPIV3_1.Document> {
+    if (!this.spec) {
+      this.spec = this.getSpec()
+      this.spec = await this.spec
+    }
+
+    return await this.spec
+  }
+
   private registerSpecRoute(router: Router) {
     router.get(this.specPath, async () => {
-      if (!this.spec) {
-        this.spec = this.getSpec()
-        this.spec = await this.spec
+      if (this.app.inDev) {
+        return await this.getSpec()
       }
 
-      return this.spec
+      return await this.getCachedSpec()
     })
   }
 
