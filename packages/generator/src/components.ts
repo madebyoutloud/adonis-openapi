@@ -15,9 +15,7 @@ export class Components extends Map<string, Component> {
   }
 
   toSchemas() {
-    return Object.fromEntries(
-      this.values().map((item) => [item.name!, item.schema]),
-    )
+    return Object.fromEntries(this.values().map((item) => [item.name!, item.schema]))
   }
 
   private computeName(schema: Component) {

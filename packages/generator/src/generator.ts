@@ -66,7 +66,16 @@ export class Generator {
   private async save(document: OpenAPIV3_1.Document) {
     await fs.promises.writeFile(
       join(this.rootPath, '.adonisjs/openapi.json'),
-      JSON.stringify(document),
+      JSON.stringify(document, (_, value) => {
+        if (!(value && typeof value === 'object' && !Array.isArray(value))) return value
+
+        return Object.keys(value)
+          .toSorted()
+          .reduce((sorted, key) => {
+            sorted[key] = value[key]
+            return sorted
+          }, {} as Record<string, any>)
+      }),
       'utf-8',
     )
   }

@@ -68,8 +68,11 @@ class LucidSerializer {
       return this.relation(name, options)
     }))
 
-    if (this.properties.length) this.schema.properties = Object.fromEntries(this.properties)
-    if (this.required.length) this.schema.required = this.required
+    if (this.properties.length) {
+      this.schema.properties = Object.fromEntries(this.properties)
+    }
+
+    if (this.required.length) this.schema.required = this.required.toSorted()
 
     return this.schema
   }
