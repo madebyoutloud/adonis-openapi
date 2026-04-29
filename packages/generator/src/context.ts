@@ -218,17 +218,19 @@ export class Context {
       })
       .filter(([,propType]) => this.isSerializable(propType))
 
-    if (rawProperties.length) {
-      result.properties = Object.fromEntries(await Promise.all(rawProperties.map(async ([prop, propType]) => {
-        const name = prop.getName()
+    const properties = await Promise.all(rawProperties.map(async ([prop, propType]) => {
+      const name = prop.getName()
 
-        if (!this.isOptional(prop)) required.push(name)
+      if (!this.isOptional(prop)) required.push(name)
 
-        return [name, await this.child(propType).toSchema()]
-      })))
+      return [name, await this.child(propType).toSchema()] as const
+    }))
+
+    if (properties.length) {
+      result.properties = Object.fromEntries(properties)
     }
 
-    if (required.length) result.required = required
+    if (required.length) result.required = required.toSorted()
 
     return result
   }

@@ -176,7 +176,7 @@ export class Route {
       }
     }
 
-    return result
+    return result.toSorted((a, b) => a.name.localeCompare(b.name))
   }
 
   private async getParameters(): Promise<OpenAPIV3_1.ParameterObject[]> {
