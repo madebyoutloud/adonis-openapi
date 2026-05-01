@@ -6,7 +6,7 @@ import type { Components } from './components.ts'
 import { Reference } from './reference.ts'
 import { Component } from './component.ts'
 import type { Handlers } from './handlers.ts'
-import { mergeSchemas } from './schema.ts'
+import { mergeSchemas, normalizeSchemas } from './schema.ts'
 
 interface ContextData {
   components: Components
@@ -125,7 +125,7 @@ export class Context {
   async toSchema(type = this.type): Promise<SchemaObject> {
     const reference = Reference.try(type.getText())
 
-    if (!type.isUnion() && reference) {
+    if (reference) {
       const data = await this.withRef(reference, () => this.$toSchema(type))
 
       return data.component.toOpenAPI()
@@ -137,36 +137,52 @@ export class Context {
   // eslint-disable-next-line complexity
   private async $toSchema(type: TsMorph.Type): Promise<SchemaObject> {
     if (type.isUnion()) return this.unionToSchema(type)
+    if (type.isIntersection()) return this.intersectionToSchema(type)
 
     const handler = this.data.handlers.match(type, this)
     if (handler) return handler.schema(type, this)
-
-    // if (type.isEnum()) console.log('ENUM')
 
     if (type.isNumber() || type.isNumberLiteral()) return { type: 'number' }
     if (type.isBoolean() || type.isBooleanLiteral()) return { type: 'boolean' }
     if (type.isStringLiteral()) return { type: 'string', enum: [type.getLiteralValue()] }
     if (type.isString()) return { type: 'string' }
-    if (type.isAny() || type.isUnknown()) return { type: 'object' }
+    if (type.isAny() || type.isUnknown()) return {}
     if (type.isNull()) return { type: 'null' }
 
     if (type.isArray()) return this.arrayToSchema(type)
 
     if (type.isObject()) return this.objectToSchema(type)
 
-    return { type: 'null' }
+    return {}
+  }
+
+  async intersectionToSchema(type: TsMorph.Type): Promise<SchemaObject> {
+    const schemas = await Promise.all(type.getIntersectionTypes()
+      .map((item) => this.$toSchema(item)))
+
+    return mergeSchemas(...schemas)
   }
 
   async unionToSchema(type: TsMorph.Type): Promise<SchemaObject> {
-    const schemas = await Promise.all(
-      type.getUnionTypes()
-        .filter((item) => this.isSerializable(item))
-        .map((item) => this.toSchema(item)),
-    )
+    let schemas: SchemaObject[]
+    const types = type.getUnionTypes()
+      .filter((item) => this.isSerializable(item))
 
-    if (!schemas.length) return { type: 'null' }
+    if (type.isNullable()) {
+      schemas = [await this.toSchema(type.getNonNullableType())]
 
-    const merged = mergeSchemas(schemas)
+      if (types.some((item) => item.isNull())) {
+        schemas.push({ type: 'null' })
+      }
+    } else {
+      schemas = await Promise.all(
+        types.map((item) => this.toSchema(item)),
+      )
+    }
+
+    if (!schemas.length) return {}
+
+    const merged = normalizeSchemas(schemas)
 
     if (merged.length === 1) return merged[0]
 

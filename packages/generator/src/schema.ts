@@ -14,22 +14,24 @@ export function isPrimitive(schema: SchemaObject | SchemaObjectType): boolean {
   return typeof type === 'string' && primitiveTypes.includes(type)
 }
 
-export function mergeSchema(schema: SchemaObject, { type, ...other }: SchemaObject): SchemaObject {
-  const result = defu(other, schema) as SchemaObject
-  const types = uniq(toArray(result.type).concat(toArray(type!)))
-  result.type = types.length === 1 ? types[0] : types
+export function mergeSchemas(...schemas: SchemaObject[]): SchemaObject {
+  return schemas.reduce((result, { type, ...schema }) => {
+    result = defu(schema, result) as SchemaObject
+    const types = uniq(toArray(result.type).concat(toArray(type)))
+    result.type = types.length === 1 ? types[0] : types
 
-  return result
+    return result
+  }, {})
 }
 
-export function mergeSchemas(schemas: SchemaObject[]) {
+export function normalizeSchemas(schemas: SchemaObject[]) {
   return schemas.reduce<SchemaObject[]>((result, schema) => {
     const index = isPrimitive(schema)
       ? result.findIndex((item) => isPrimitive(item))
       : -1
 
     if (index !== -1) {
-      result[index] = mergeSchema(result[index]!, schema)
+      result[index] = mergeSchemas(result[index]!, schema)
     } else if (!result.some((item) => equal(item, schema))) {
       result.push(schema)
     }
