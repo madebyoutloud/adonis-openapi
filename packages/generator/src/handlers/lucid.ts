@@ -5,9 +5,6 @@ import type { Handler, SchemaObject } from '../types.ts'
 import { Reference } from '../reference.ts'
 import type { Context } from '../context.ts'
 
-const relationRegex = /typeof import\((?:'|")([^'"]+)(?:'|")\)\.(\w+)/
-const arrayRelationTypes = ['hasMany', 'manyToMany', 'hasManyThrough']
-
 export class LucidHandler implements Handler {
   isLucidRow(type: TsMorph.Type): boolean {
     if (!type.isClass()) return false
@@ -94,21 +91,19 @@ class LucidSerializer {
     if (!options.serializeAs) return
 
     const prop = this.context.property(name, this.type)
-    const referenceType = prop.type.getNonNullableType()
-    const match = referenceType.getText().match(relationRegex)
+    const relationType = prop.type.getNonNullableType()
+    let type: TsMorph.Type | undefined = relationType.getIntersectionTypes()[0]
+    const isArray = type.isArray()
 
-    if (!match) return
-
-    const [,path, importName] = match
-
-    const file = this.context.file(`${path}.ts`)
-    const type = file.getClass(importName)?.getType()
+    if (isArray) {
+      type = type.getArrayElementType()
+    }
 
     if (!type) return
 
     let schema = await this.context.child(type).toSchema()
 
-    if (arrayRelationTypes.includes(options.type)) {
+    if (isArray) {
       schema = { type: 'array', items: schema }
     } else if (prop.type.isNullable()) {
       schema = { oneOf: [schema, { type: 'null' }] }
