@@ -1,7 +1,7 @@
 {
   "name": "@outloud/adonis-openapi",
   "type": "module",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "OpenAPI for AdonisJS 6/7.",
   "author": "Outloud <hello@outloud.co>",
   "contributors": [
