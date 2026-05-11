@@ -38,7 +38,12 @@ export class Context {
     type: TsMorph.Type
   } {
     const prop = parent.getPropertyOrThrow(Array.isArray(path) ? path[0] : path)
-    const node = prop.getValueDeclarationOrThrow()
+    const node = prop.getValueDeclaration() ?? prop.getDeclarations()[0]
+
+    if (!node) {
+      throw new Error(`Expected to find a declaration for symbol '${prop.getName()}'.`)
+    }
+
     const type = node.getType()
 
     if (Array.isArray(path) && path.length > 1) {
