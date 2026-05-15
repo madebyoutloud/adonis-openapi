@@ -1,6 +1,6 @@
 # AdonisJS OpenAPI
 
-OpenAPI generator for [AdonisJS](https://adonisjs.com/) 6/7.
+OpenAPI generator for [AdonisJS](https://adonisjs.com/) 7.
 
 <p>
 

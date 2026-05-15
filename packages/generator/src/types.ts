@@ -34,6 +34,7 @@ export interface GeneratorConfig {
     include?: string[]
     exclude?: string[]
   }
+  handlers?: Handler[]
 }
 
 export interface GeneratorOptions {

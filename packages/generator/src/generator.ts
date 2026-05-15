@@ -24,6 +24,8 @@ export class Generator {
   constructor(public root: URL, public options: GeneratorOptions) {
     this.components = new Components(this.rootPath)
     this.handlers = new Handlers(defaultHandlers)
+
+    if (this.config.handlers) this.handlers.push(...this.config.handlers)
   }
 
   get config() {

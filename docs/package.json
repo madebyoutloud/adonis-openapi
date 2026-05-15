@@ -1,0 +1,19 @@
+{
+  "name": "docs",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview"
+  },
+  "dependencies": {
+    "@outloud/docs": "^1.0.2",
+    "nuxt": "^4.1.3"
+  },
+  "devDependencies": {
+    "@outloud/eslint-config": "^3",
+    "eslint": "^10",
+    "eslint-plugin-vue": "^10.9.1",
+    "vue-eslint-parser": "^10.4.0"
+  }
+}

@@ -2,7 +2,7 @@
   "name": "@outloud/adonis-openapi",
   "type": "module",
   "version": "1.0.6",
-  "description": "OpenAPI for AdonisJS 6/7.",
+  "description": "OpenAPI generator for AdonisJS 7.",
   "author": "Outloud <hello@outloud.co>",
   "contributors": [
     "Andrej Adamcik"
@@ -11,7 +11,7 @@
   "homepage": "https://github.com/madebyoutloud/adonis-openapi#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/madebyoutloud/adonis-openapi.git"
+    "url": "https://github.com/madebyoutloud/adonis-openapi.git"
   },
   "files": [
     "build"
