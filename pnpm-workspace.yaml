@@ -3,6 +3,7 @@ packages:
   - packages/*
   - playground
   - docs
+
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
@@ -10,3 +11,6 @@ allowBuilds:
   esbuild: true
   sharp: true
   vue-demi: true
+
+overrides:
+  "vite": "^8"
