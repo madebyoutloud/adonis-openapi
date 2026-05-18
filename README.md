@@ -11,6 +11,9 @@ OpenAPI generator for [AdonisJS](https://adonisjs.com/) 7.
 
 </p>
 
+## Documentation
+To learn more, check [documentation](https://docs.outloud.dev/openapi/).
+
 ---
 
 

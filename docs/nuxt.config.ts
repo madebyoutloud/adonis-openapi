@@ -7,4 +7,11 @@ export default defineNuxtConfig({
   package: {
     path: '../packages/openapi',
   },
+
+  nitro: {
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
+    },
+  },
 })

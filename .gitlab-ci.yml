@@ -2,14 +2,15 @@ variables:
   PIPELINE:
     description: "Specify which pipeline to run"
     value: publish
-    options: [publish]
+    options: [publish, docs]
 
-stages: [publish]
+stages: [publish, deploy]
 
 include:
   - component: $OUTLOUD_CI/publish-npm@4
     inputs:
       name: openapi
+      registry: [npm, gitlab]
       dir: packages/openapi
       script:
         - ( cd ../generator && pnpm run build )
@@ -18,5 +19,21 @@ include:
   - component: $OUTLOUD_CI/publish-npm@4
     inputs:
       name: generator
+      registry: [npm, gitlab]
       dir: packages/generator
       notify: false
+
+  - component: $OUTLOUD_CI/deploy-cloudflare@4
+    inputs:
+      environment: production
+      script:
+        - export NUXT_APP_BASE_URL=/openapi/
+        - cd docs
+          pnpm install
+          pnpm build --preset=cloudflare_module
+          wrangler deploy --keep-vars --name=docs-adonis-openapi
+      rules:
+        - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+          changes:
+            - docs/**/*
+        - if: $CI_PIPELINE_SOURCE == "web" && $PIPELINE == "docs"
