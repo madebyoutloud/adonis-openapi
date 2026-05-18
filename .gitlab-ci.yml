@@ -27,8 +27,9 @@ include:
     inputs:
       environment: production
       script:
-        - export NUXT_APP_BASE_URL=/openapi/
-        - cd docs
+        - |
+          cd docs
+          export NUXT_APP_BASE_URL=/openapi/
           pnpm install
           pnpm build --preset=cloudflare_module
           wrangler deploy --keep-vars --name=docs-adonis-openapi
