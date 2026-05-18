@@ -30,8 +30,8 @@ importers:
   docs:
     dependencies:
       '@outloud/docs':
-        specifier: ^1.0.2
-        version: 1.0.2(78fe80a7f0157492202df85ff1c7085d)
+        specifier: ^1.0.5
+        version: 1.0.5(78fe80a7f0157492202df85ff1c7085d)
       agents:
         specifier: ^0.12.4
         version: 0.12.4(@babel/core@7.29.0)(@babel/runtime@7.29.2)(@cloudflare/workers-types@4.20260518.1)(ai@6.0.168(zod@4.4.3))(react@19.2.6)(rolldown@1.0.0-rc.17)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))(zod@4.4.3)
@@ -2234,8 +2234,8 @@ packages:
     resolution: {integrity: sha512-3giAOQvZiH5F9bMlMiv8+GSPMeqg0dbaeo58/0SlA9sxSqZhnUtxzX9/2FzyhS9sWQf5S0GJE0AKBrFqjpeYcg==}
     engines: {node: '>=8.0.0'}
 
-  '@outloud/docs@1.0.2':
-    resolution: {integrity: sha512-mdPX1v+o0MvohtVJWMD7wpYZTupYMAEbRdnFv37j2ken3jf1+hCDBO7DySjDTHF/nTxMxrWmgPigWgVrW8TazA==}
+  '@outloud/docs@1.0.5':
+    resolution: {integrity: sha512-6G7dQ3aiyFzq6vEQdLBm+cJ4hrix+QQDOtZ8Y9nWNcguQ5JGi/6Zg5RfUaUVPFkgD4xljYYADhZmfDpIxWde6g==}
 
   '@outloud/eslint-config@3.0.3':
     resolution: {integrity: sha512-CvqRJ4z/pfqStES5fGpTvbwm239T+aZwH9aDXTTqx0D8CQn7l59OUJRYddZCbhFtt0yDcWukR0M7GoOgamvDnA==}
@@ -11672,8 +11672,8 @@ snapshots:
       '@intlify/shared': 11.4.2
       '@intlify/vue-i18n-extensions': 8.0.0(@intlify/shared@11.4.2)(@vue/compiler-dom@3.5.34)(vue-i18n@11.4.2(vue@3.5.34(typescript@5.9.3)))(vue@3.5.34(typescript@5.9.3))
       '@rollup/pluginutils': 5.3.0(rollup@4.60.3)
-      '@typescript-eslint/scope-manager': 8.59.0
-      '@typescript-eslint/typescript-estree': 8.59.0(typescript@5.9.3)
+      '@typescript-eslint/scope-manager': 8.59.3
+      '@typescript-eslint/typescript-estree': 8.59.3(typescript@5.9.3)
       debug: 4.4.3
       fast-glob: 3.3.3
       pathe: 2.0.3
@@ -12648,7 +12648,7 @@ snapshots:
 
   '@opentelemetry/api@1.9.0': {}
 
-  '@outloud/docs@1.0.2(78fe80a7f0157492202df85ff1c7085d)':
+  '@outloud/docs@1.0.5(78fe80a7f0157492202df85ff1c7085d)':
     dependencies:
       '@nuxt/content': 3.13.0(better-sqlite3@12.10.0)(magicast@0.5.2)
       '@nuxt/kit': 4.4.5(magicast@0.5.2)
@@ -12657,6 +12657,7 @@ snapshots:
       docus: 5.11.0(d54560599adb863b2ef8de8162be4e8a)
       nuxt: 4.4.5(@babel/core@7.29.0)(@babel/plugin-proposal-decorators@7.29.0(@babel/core@7.29.0))(@babel/plugin-syntax-jsx@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@25.6.0)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.10.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.10.0))(esbuild@0.28.0)(eslint@10.2.1(jiti@2.7.0))(ioredis@5.10.1)(magicast@0.5.2)(optionator@0.9.4)(rolldown@1.0.0-rc.17)(rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.17)(rollup@4.60.3))(rollup@4.60.3)(srvx@0.11.15)(terser@5.47.1)(typescript@5.9.3)(vite@8.0.10(@types/node@25.6.0)(esbuild@0.28.0)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))(yaml@2.9.0)
       nuxt-svgo: 5.3.0(magicast@0.5.2)(vue@3.5.34(typescript@5.9.3))
+      scule: 1.3.0
       tailwindcss: 4.3.0
     transitivePeerDependencies:
       - '@azure/app-configuration'
@@ -14486,6 +14487,15 @@ snapshots:
       - supports-color
     optional: true
 
+  '@typescript-eslint/project-service@8.59.3(typescript@5.9.3)':
+    dependencies:
+      '@typescript-eslint/tsconfig-utils': 8.59.3(typescript@5.9.3)
+      '@typescript-eslint/types': 8.59.3
+      debug: 4.4.3
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/scope-manager@8.39.0':
     dependencies:
       '@typescript-eslint/types': 8.39.0
@@ -14500,7 +14510,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.59.3
       '@typescript-eslint/visitor-keys': 8.59.3
-    optional: true
 
   '@typescript-eslint/tsconfig-utils@8.39.0(typescript@5.8.3)':
     dependencies:
@@ -14522,6 +14531,10 @@ snapshots:
     dependencies:
       typescript: 5.9.2
     optional: true
+
+  '@typescript-eslint/tsconfig-utils@8.59.3(typescript@5.9.3)':
+    dependencies:
+      typescript: 5.9.3
 
   '@typescript-eslint/type-utils@8.39.0(eslint@10.2.1(jiti@2.7.0))(typescript@5.8.3)':
     dependencies:
@@ -14563,8 +14576,7 @@ snapshots:
 
   '@typescript-eslint/types@8.59.0': {}
 
-  '@typescript-eslint/types@8.59.3':
-    optional: true
+  '@typescript-eslint/types@8.59.3': {}
 
   '@typescript-eslint/typescript-estree@8.39.0(typescript@5.8.3)':
     dependencies:
@@ -14628,6 +14640,21 @@ snapshots:
       - supports-color
     optional: true
 
+  '@typescript-eslint/typescript-estree@8.59.3(typescript@5.9.3)':
+    dependencies:
+      '@typescript-eslint/project-service': 8.59.3(typescript@5.9.3)
+      '@typescript-eslint/tsconfig-utils': 8.59.3(typescript@5.9.3)
+      '@typescript-eslint/types': 8.59.3
+      '@typescript-eslint/visitor-keys': 8.59.3
+      debug: 4.4.3
+      minimatch: 10.2.5
+      semver: 7.8.0
+      tinyglobby: 0.2.16
+      ts-api-utils: 2.5.0(typescript@5.9.3)
+      typescript: 5.9.3
+    transitivePeerDependencies:
+      - supports-color
+
   '@typescript-eslint/utils@8.39.0(eslint@10.2.1(jiti@2.7.0))(typescript@5.8.3)':
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.2.1(jiti@2.7.0))
@@ -14675,7 +14702,6 @@ snapshots:
     dependencies:
       '@typescript-eslint/types': 8.59.3
       eslint-visitor-keys: 5.0.1
-    optional: true
 
   '@ungap/structured-clone@1.3.1': {}
 

@@ -7,7 +7,7 @@
     "preview": "nuxt preview"
   },
   "dependencies": {
-    "@outloud/docs": "^1.0.2",
+    "@outloud/docs": "^1.0.5",
     "agents": "^0.12.4",
     "nuxt": "^4"
   },
