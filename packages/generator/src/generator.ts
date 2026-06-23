@@ -25,7 +25,8 @@ export class Generator {
     this.components = new Components(this.rootPath)
     this.handlers = new Handlers(defaultHandlers)
 
-    if (this.config.handlers) this.handlers.push(...this.config.handlers)
+    // Prepend so user handlers take precedence over the built-in pipeline
+    if (this.config.handlers) this.handlers.unshift(...this.config.handlers)
   }
 
   get config() {
