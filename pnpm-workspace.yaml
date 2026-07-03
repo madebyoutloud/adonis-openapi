@@ -4,12 +4,19 @@ packages:
   - playground
   - docs
 
+minimumReleaseAge: 10080 # 7 days in minutes
+blockExoticSubdeps: true
+ignoreWorkspaceRootCheck: true
+verifyDepsBeforeRun: false
+
 allowBuilds:
   '@parcel/watcher': true
   '@swc/core': true
   better-sqlite3: true
+  core-js-pure: false
   esbuild: true
   sharp: true
+  unrs-resolver: false
   vue-demi: true
 
 overrides:
