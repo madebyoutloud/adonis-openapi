@@ -24,6 +24,14 @@ export class Context {
 
   }
 
+  /**
+   * The anchor node (the registry interface) used to resolve the instantiated
+   * type of a symbol via `getTypeAtLocation`.
+   */
+  get node() {
+    return this.data.node
+  }
+
   child(type: TsMorph.Type) {
     return new Context(type, this.data, this.depth + 1)
   }
