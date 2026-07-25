@@ -25,11 +25,25 @@ export default class OpenAPIProvider {
 
   async boot() {
     this.config = this.app.config.get<OpenAPIConfig>('openapi')
-    const router = await this.app.container.make('router')
+  }
 
-    if (this.config.enabled) {
-      this.registerSpecRoute(router)
-      this.registerDocsRoute(router)
+  /**
+   * Routes are registered in `start` (not `boot`) so the `endpoints.middleware`
+   * factory can import `#start/kernel`: container services only resolve once the
+   * app is booted, and `start` runs right after — still before preloads and the
+   * router commit.
+   */
+  async start() {
+    if (!this.config.enabled) {
+      return
+    }
+
+    const router = await this.app.container.make('router')
+    const routes = [this.registerSpecRoute(router), this.registerDocsRoute(router)]
+    const middleware = await this.config.endpoints?.middleware?.()
+
+    if (middleware) {
+      routes.forEach((route) => route.use(middleware))
     }
   }
 
@@ -61,7 +75,7 @@ export default class OpenAPIProvider {
   }
 
   private registerSpecRoute(router: Router) {
-    router.get(this.specPath, async () => {
+    return router.get(this.specPath, async () => {
       if (this.app.inDev) {
         return await this.getSpec()
       }
@@ -76,7 +90,7 @@ export default class OpenAPIProvider {
     const baseUrl = process.env.APP_URL ?? ''
     const specPath = `${baseUrl}${this.specPath}`
 
-    router.get(path, () => provider(specPath, this.config.scalar))
+    return router.get(path, () => provider(specPath, this.config.scalar))
   }
 }
 
