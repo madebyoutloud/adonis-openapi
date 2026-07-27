@@ -15,6 +15,39 @@ const routeType = {
   response: /^[a-zA-Z<]*import\((?:'|")([^']+)(?:'|")\)\.default\[(?:'|")(\w+)(?:'|")\][a-zA-Z>]*$/,
 }
 
+const STATUS_TEXT: Record<number, string> = {
+  200: 'OK',
+  201: 'Created',
+  202: 'Accepted',
+  203: 'Non-Authoritative Information',
+  204: 'No Content',
+  205: 'Reset Content',
+  206: 'Partial Content',
+  300: 'Multiple Choices',
+  301: 'Moved Permanently',
+  302: 'Found',
+  304: 'Not Modified',
+  307: 'Temporary Redirect',
+  400: 'Bad Request',
+  401: 'Unauthorized',
+  402: 'Payment Required',
+  403: 'Forbidden',
+  404: 'Not Found',
+  405: 'Method Not Allowed',
+  406: 'Not Acceptable',
+  409: 'Conflict',
+  410: 'Gone',
+  413: 'Payload Too Large',
+  415: 'Unsupported Media Type',
+  422: 'Unprocessable Entity',
+  429: 'Too Many Requests',
+  500: 'Internal Server Error',
+  501: 'Not Implemented',
+  502: 'Bad Gateway',
+  503: 'Service Unavailable',
+  504: 'Gateway Timeout',
+}
+
 export class Route {
   constructor(
     public name: string,
@@ -114,6 +147,14 @@ export class Route {
   }
 
   private async getResponses(): Promise<OpenAPIV3_1.ResponsesObject | undefined> {
+    // Prefer Tuyau's normalized `rawResponse` union ({ status; response } across
+    // all status codes) so every documented response — 201/204 successes and
+    // 4xx errors alike — is emitted with its real code and body.
+    const responses = await this.getRawResponses()
+    if (responses) return responses
+
+    // Legacy fallback for registries generated before `rawResponse` existed:
+    // a single 200 built from `response`.
     const { type } = this.context.property('response')
     if (type.isUnknown()) return
 
@@ -129,6 +170,67 @@ export class Route {
         },
       },
     }
+  }
+
+  private async getRawResponses(): Promise<OpenAPIV3_1.ResponsesObject | undefined> {
+    let raw
+    try {
+      raw = this.context.property('rawResponse')
+    } catch {
+      return
+    }
+
+    if (raw.type.isUnknown()) return
+
+    const node = this.context.node
+    const byStatus = new Map<number, SchemaObject[]>()
+
+    for (const member of this.context.unionToArray(raw.type)) {
+      const statusSym = member.getProperty('status')
+      if (!statusSym) continue
+
+      // Read the INSTANTIATED literal via getTypeAtLocation — a value
+      // declaration would return the generic parameter (`S`/`R`) from the
+      // ExtractRawResponse definition instead of the concrete `201`/body.
+      const statusType = statusSym.getTypeAtLocation(node)
+      const responseSym = member.getProperty('response')
+      const responseType = responseSym?.getTypeAtLocation(node)
+
+      for (const status of this.context.unionToArray(statusType)) {
+        if (!status.isNumberLiteral()) continue
+
+        const code = status.getLiteralValue() as number
+        if (!byStatus.has(code)) byStatus.set(code, [])
+
+        if (responseType && this.isBodyfulResponse(responseType)) {
+          byStatus.get(code)!.push(await this.context.toSchema(responseType))
+        }
+      }
+    }
+
+    if (!byStatus.size) return
+
+    const responses: OpenAPIV3_1.ResponsesObject = {}
+
+    for (const [code, schemas] of byStatus) {
+      const response: OpenAPIV3_1.ResponseObject = { description: STATUS_TEXT[code] ?? String(code) }
+
+      if (schemas.length === 1) {
+        response.content = { 'application/json': { schema: schemas[0] as any } }
+      } else if (schemas.length > 1) {
+        response.content = { 'application/json': { schema: { oneOf: schemas } as any } }
+      }
+
+      responses[code] = response
+    }
+
+    return responses
+  }
+
+  private isBodyfulResponse(type: Context['type']): boolean {
+    if (type.isUnknown() || type.isNever() || type.isVoid() || type.isUndefined()) return false
+    if (type.isObject() && !type.isArray() && type.getProperties().length === 0) return false
+    return true
   }
 
   private getPathParameters(): OpenAPIV3_1.ParameterObject[] {
