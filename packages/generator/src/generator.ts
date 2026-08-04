@@ -10,7 +10,8 @@ import { Context } from './context.ts'
 import type { GeneratorOptions, RouteInfo } from './types.ts'
 import { Components } from './components.js'
 import { Handlers } from './handlers.js'
-import { defaultHandlers } from './constants.ts'
+import { defaultHandlers } from './constants.js'
+import { sortObject } from './helpers.js'
 
 export class Generator {
   private declare project: Project
@@ -72,12 +73,7 @@ export class Generator {
       JSON.stringify(document, (_, value) => {
         if (!(value && typeof value === 'object' && !Array.isArray(value))) return value
 
-        return Object.keys(value)
-          .toSorted()
-          .reduce((sorted, key) => {
-            sorted[key] = value[key]
-            return sorted
-          }, {} as Record<string, any>)
+        return sortObject(value)
       }),
       'utf-8',
     )

@@ -161,9 +161,8 @@ export class Context {
     if (type.isString()) return { type: 'string' }
     if (type.isAny() || type.isUnknown()) return {}
     if (type.isNull()) return { type: 'null' }
-
+    if (type.isTuple()) return this.tupleToSchema(type)
     if (type.isArray()) return this.arrayToSchema(type)
-
     if (type.isObject()) return this.objectToSchema(type)
 
     return {}
@@ -205,6 +204,18 @@ export class Context {
   jsonToSchema(symbol: TsMorph.Symbol): Promise<SchemaObject> {
     const declaration = symbol.getValueDeclarationOrThrow() as FunctionDeclaration
     return this.toSchema(declaration.getReturnType())
+  }
+
+  async tupleToSchema(type: TsMorph.Type): Promise<SchemaObject> {
+    if (this.depth >= maxDepth) return { type: 'array', items: { type: 'object' } }
+
+    return {
+      type: 'array',
+      // openapi-types does not support prefixItems
+      prefixItems: await Promise.all(type.getTupleElements().map((item) => {
+        return this.child(item).toSchema()
+      })),
+    } as any
   }
 
   async arrayToSchema(type: TsMorph.Type): Promise<SchemaObject> {
