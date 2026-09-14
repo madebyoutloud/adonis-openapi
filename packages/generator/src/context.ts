@@ -122,7 +122,7 @@ export class Context {
   isOptional(prop: TsMorph.Symbol) {
     if (prop.isOptional()) return true
 
-    const type = prop.getValueDeclaration()?.getType() ?? prop.getTypeAtLocation(this.data.node)
+    const type = prop.getTypeAtLocation(this.data.node)
 
     if (!type.isUnion()) return type.isUndefined()
 
@@ -252,7 +252,7 @@ export class Context {
 
     const rawProperties = type.getProperties()
       .map((item) => {
-        const propType = item.getValueDeclaration()?.getType() ?? item.getTypeAtLocation(this.data.node)
+        const propType = item.getTypeAtLocation(this.data.node)
 
         return [item, propType] as const
       })
