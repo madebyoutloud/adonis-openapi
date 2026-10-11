@@ -1,0 +1,1632 @@
+{
+  "components": {
+    "schemas": {
+      "Comment": {
+        "properties": {
+          "author": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/User"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "author_id": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "body": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "post": {
+            "$ref": "#/components/schemas/Post"
+          },
+          "post_id": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "author_id",
+          "body",
+          "id",
+          "post_id"
+        ],
+        "type": "object"
+      },
+      "CreatePostProps": {
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "publishedAt": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "seo": {
+            "oneOf": [
+              {
+                "properties": {
+                  "keywords": {
+                    "items": {
+                      "type": "string"
+                    },
+                    "type": "array"
+                  },
+                  "title": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "keywords"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "status": {
+            "enum": [
+              "published",
+              "draft"
+            ],
+            "type": "string"
+          },
+          "tags": {
+            "oneOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "body",
+          "publishedAt",
+          "status",
+          "title"
+        ],
+        "type": "object"
+      },
+      "CreateUserProps": {
+        "properties": {
+          "acceptTerms": {
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
+          },
+          "age": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "password": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "viewer",
+              "editor",
+              "admin"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "acceptTerms",
+          "email",
+          "firstName",
+          "lastName",
+          "password",
+          "role"
+        ],
+        "type": "object"
+      },
+      "CypherText": {
+        "type": "string"
+      },
+      "Decimal": {
+        "pattern": "^-?\\d+(\\.\\d+)?$",
+        "type": "string"
+      },
+      "FilesUploadResponse": {
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "size": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "size",
+          "title"
+        ],
+        "type": "object"
+      },
+      "Money": {
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "type": "object"
+      },
+      "MultipartFile": {
+        "format": "binary",
+        "type": "string"
+      },
+      "Post": {
+        "properties": {
+          "author": {
+            "$ref": "#/components/schemas/User"
+          },
+          "authorId": {
+            "type": "number"
+          },
+          "body": {
+            "type": "string"
+          },
+          "comments": {
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            },
+            "type": "array"
+          },
+          "id": {
+            "type": "number"
+          },
+          "price": {
+            "$ref": "#/components/schemas/Decimal"
+          },
+          "publishedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "published",
+              "draft"
+            ],
+            "type": "string"
+          },
+          "tags": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "authorId",
+          "body",
+          "id",
+          "price",
+          "publishedAt",
+          "status",
+          "tags",
+          "title"
+        ],
+        "type": "object"
+      },
+      "PostsCommentsResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Comment"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "properties": {
+              "current_page": {
+                "type": "number"
+              },
+              "first_page": {
+                "type": "number"
+              },
+              "first_page_url": {
+                "type": "string"
+              },
+              "last_page": {
+                "type": "number"
+              },
+              "last_page_url": {
+                "type": "string"
+              },
+              "next_page_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "per_page": {
+                "type": "number"
+              },
+              "previous_page_url": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "total": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "current_page",
+              "first_page",
+              "first_page_url",
+              "last_page",
+              "last_page_url",
+              "next_page_url",
+              "per_page",
+              "previous_page_url",
+              "total"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "PostsDestroyResponse": {
+        "properties": {
+          "deleted": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "deleted"
+        ],
+        "type": "object"
+      },
+      "PostsForUserResponse": {
+        "items": {
+          "$ref": "#/components/schemas/Post"
+        },
+        "type": "array"
+      },
+      "PostsIndexResponse": {
+        "items": {
+          "$ref": "#/components/schemas/Post"
+        },
+        "type": "array"
+      },
+      "PostsShowResponse": {
+        "$ref": "#/components/schemas/Post"
+      },
+      "PostsStoreResponse": {
+        "$ref": "#/components/schemas/Post"
+      },
+      "PostsUpdateResponse": {
+        "$ref": "#/components/schemas/Post"
+      },
+      "TypesCollectionsResponse": {
+        "properties": {
+          "addresses": {
+            "items": {
+              "properties": {
+                "city": {
+                  "type": "string"
+                },
+                "street": {
+                  "type": "string"
+                },
+                "zip": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "city",
+                "street"
+              ],
+              "type": "object"
+            },
+            "type": "array"
+          },
+          "matrix": {
+            "items": {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            "type": "array"
+          },
+          "record": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "type": "object"
+          },
+          "strings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tuple": {
+            "prefixItems": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ],
+            "type": "array"
+          }
+        },
+        "required": [
+          "addresses",
+          "matrix",
+          "record",
+          "strings",
+          "tuple"
+        ],
+        "type": "object"
+      },
+      "TypesCustomResponse": {
+        "properties": {
+          "encrypted": {
+            "$ref": "#/components/schemas/CypherText"
+          },
+          "timestamp": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "encrypted",
+          "timestamp"
+        ],
+        "type": "object"
+      },
+      "TypesGenericResponse": {
+        "properties": {
+          "data": {
+            "properties": {
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "message"
+            ],
+            "type": "object"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "data",
+          "status"
+        ],
+        "type": "object"
+      },
+      "TypesGenericTypesResponse": {
+        "properties": {
+          "envelope": {
+            "properties": {
+              "data": {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "circle"
+                    ],
+                    "type": "string"
+                  },
+                  "radius": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "radius"
+                ],
+                "type": "object"
+              },
+              "version": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "data",
+              "version"
+            ],
+            "type": "object"
+          },
+          "page": {
+            "properties": {
+              "items": {
+                "items": {
+                  "properties": {
+                    "city": {
+                      "type": "string"
+                    },
+                    "street": {
+                      "type": "string"
+                    },
+                    "zip": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "city",
+                    "street"
+                  ],
+                  "type": "object"
+                },
+                "type": "array"
+              },
+              "total": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "items",
+              "total"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "envelope",
+          "page"
+        ],
+        "type": "object"
+      },
+      "TypesIntersectionResponse": {
+        "properties": {
+          "city": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "street": {
+            "type": "string"
+          },
+          "zip": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "country",
+          "city",
+          "street"
+        ],
+        "type": "object"
+      },
+      "TypesOptionalResponse": {
+        "properties": {
+          "nullable": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "optional": {
+            "type": "string"
+          },
+          "required": {
+            "type": "string"
+          },
+          "undefinable": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "nullable",
+          "required"
+        ],
+        "type": "object"
+      },
+      "TypesOverridesResponse": {
+        "properties": {
+          "any": {},
+          "price": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "unknown": {}
+        },
+        "required": [
+          "any",
+          "price",
+          "unknown"
+        ],
+        "type": "object"
+      },
+      "TypesPrimitivesResponse": {
+        "properties": {
+          "boolean": {
+            "type": "boolean"
+          },
+          "enum": {
+            "enum": [
+              "private",
+              "public"
+            ],
+            "type": "string"
+          },
+          "literal": {
+            "enum": [
+              "fixed"
+            ],
+            "type": "string"
+          },
+          "literalNumber": {
+            "enum": [
+              42
+            ],
+            "type": "number"
+          },
+          "literalUnion": {
+            "enum": [
+              "c",
+              "a",
+              "b"
+            ],
+            "type": "string"
+          },
+          "null": {
+            "type": "null"
+          },
+          "number": {
+            "type": "number"
+          },
+          "string": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "boolean",
+          "enum",
+          "literal",
+          "literalNumber",
+          "literalUnion",
+          "null",
+          "number",
+          "string"
+        ],
+        "type": "object"
+      },
+      "TypesUnionsResponse": {
+        "properties": {
+          "mixed": {
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "nullableObject": {
+            "oneOf": [
+              {
+                "properties": {
+                  "city": {
+                    "type": "string"
+                  },
+                  "street": {
+                    "type": "string"
+                  },
+                  "zip": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "city",
+                  "street"
+                ],
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "shape": {
+            "oneOf": [
+              {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "circle"
+                    ],
+                    "type": "string"
+                  },
+                  "radius": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "radius"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "kind": {
+                    "enum": [
+                      "square"
+                    ],
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "kind",
+                  "size"
+                ],
+                "type": "object"
+              }
+            ]
+          }
+        },
+        "required": [
+          "mixed",
+          "nullableObject",
+          "shape"
+        ],
+        "type": "object"
+      },
+      "UpdatePostProps": {
+        "properties": {
+          "body": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "enum": [
+              "published",
+              "draft"
+            ],
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "title": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "type": "object"
+      },
+      "UploadProps": {
+        "properties": {
+          "attachments": {
+            "oneOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/MultipartFile"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "file": {
+            "$ref": "#/components/schemas/MultipartFile"
+          },
+          "thumbnail": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/MultipartFile"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "file",
+          "title"
+        ],
+        "type": "object"
+      },
+      "User": {
+        "properties": {
+          "createdAt": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "first_name": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "id": {
+            "type": "number"
+          },
+          "lastName": {
+            "type": "string"
+          },
+          "middleName": {
+            "type": "string"
+          },
+          "posts": {
+            "items": {
+              "$ref": "#/components/schemas/Post"
+            },
+            "type": "array"
+          },
+          "role": {
+            "enum": [
+              "viewer",
+              "editor",
+              "admin"
+            ],
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "createdAt",
+          "email",
+          "first_name",
+          "fullName",
+          "id",
+          "lastName",
+          "role",
+          "updatedAt"
+        ],
+        "type": "object"
+      },
+      "UsersIndexResponse": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/User"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "properties": {
+              "currentPage": {
+                "type": "number"
+              },
+              "firstPage": {
+                "type": "number"
+              },
+              "firstPageUrl": {
+                "type": "string"
+              },
+              "lastPage": {
+                "type": "number"
+              },
+              "lastPageUrl": {
+                "type": "string"
+              },
+              "nextPageUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "perPage": {
+                "type": "number"
+              },
+              "previousPageUrl": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "total": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "currentPage",
+              "firstPage",
+              "firstPageUrl",
+              "lastPage",
+              "lastPageUrl",
+              "nextPageUrl",
+              "perPage",
+              "previousPageUrl",
+              "total"
+            ],
+            "type": "object"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "UsersShowResponse": {
+        "$ref": "#/components/schemas/User"
+      },
+      "UsersStoreResponse": {
+        "$ref": "#/components/schemas/User"
+      }
+    }
+  },
+  "info": {
+    "title": "API Reference",
+    "version": "0.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/files": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/UploadProps"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FilesUploadResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Upload file",
+        "tags": [
+          "Files"
+        ]
+      }
+    },
+    "/api/posts": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsIndexResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "List posts",
+        "tags": [
+          "Posts"
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePostProps"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsStoreResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create post",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/api/posts/{id}": {
+      "delete": {
+        "deprecated": true,
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsDestroyResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete post",
+        "tags": [
+          "Posts"
+        ]
+      },
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsShowResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get post",
+        "tags": [
+          "Posts"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostProps"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsUpdateResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update post",
+        "tags": [
+          "Posts"
+        ]
+      },
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePostProps"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsUpdateResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update post",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/api/posts/{id}/comments": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsCommentsResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List post comments",
+        "tags": [
+          "Posts"
+        ]
+      }
+    },
+    "/api/users": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "number",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "number",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "role",
+            "required": false,
+            "schema": {
+              "enum": [
+                "viewer",
+                "editor",
+                "admin"
+              ],
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "required": false,
+            "schema": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersIndexResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "List users",
+        "tags": [
+          "Users"
+        ]
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserProps"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersStoreResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Create user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "summary": "Delete user",
+        "tags": [
+          "Users"
+        ]
+      },
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsersShowResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get user",
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}/posts": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsForUserResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/api/users/{id}/posts/{postId}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          {
+            "in": "path",
+            "name": "postId",
+            "required": true,
+            "schema": {
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostsForUserResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Users"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check"
+      }
+    },
+    "/types/collections": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesCollectionsResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/custom": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesCustomResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/generic": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesGenericResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/generic-types": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesGenericTypesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/intersection": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesIntersectionResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/optional": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesOptionalResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/overrides": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesOverridesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/primitives": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesPrimitivesResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/unions": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesUnionsResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    }
+  }
+}

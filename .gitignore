@@ -7,7 +7,6 @@ test/__app
 *.log
 build
 dist
+.adonisjs
 
 .npmrc
-playground
-tests

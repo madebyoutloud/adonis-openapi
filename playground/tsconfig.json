@@ -1,0 +1,13 @@
+{
+  "extends": "@adonisjs/tsconfig/tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Mirrors source/hooks.ts, so types come from package sources too
+    "paths": {
+      "@outloud/adonis-openapi-generator": ["../packages/generator/src/index.ts"],
+      "@outloud/adonis-openapi": ["../packages/openapi/src/index.ts"],
+      "@outloud/adonis-openapi/provider": ["../packages/openapi/providers/openapi.provider.ts"],
+      "@outloud/adonis-openapi/commands": ["./source/commands.ts"]
+    }
+  }
+}
