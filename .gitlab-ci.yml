@@ -10,6 +10,9 @@ include:
   - component: $OUTLOUD_CI/test-nodejs@4
     inputs:
       name: test
+      script:
+        - pnpm build
+        - pnpm test
 
   - component: $OUTLOUD_CI/publish-npm@4
     inputs:
