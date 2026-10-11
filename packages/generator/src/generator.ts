@@ -105,6 +105,17 @@ export class Generator {
         const types = context.propType([name, 'types'])
         return new Route(name, info, this.context(types), this.options.meta)
       })
+
+    // The registry skips unnamed routes (e.g. closures), keep those with metadata
+    const known = new Set(this.routes.flatMap((route) => {
+      return route.data.methods.map((method) => `${method}:${route.data.pattern}`)
+    }))
+
+    for (const info of this.options.meta.routes?.() ?? []) {
+      if (info.methods.some((method) => known.has(`${method}:${info.pattern}`))) continue
+
+      this.routes.push(new Route(info.pattern, info, undefined, this.options.meta))
+    }
   }
 
   private toDocument(): OpenAPIV3_1.Document {
@@ -141,15 +152,14 @@ export class Generator {
   private async processRoute(route: Route) {
     if (!this.validateRoute(route)) return
 
-    const [schema, error] = await catchError(route.toPathItem())
+    const [items, error] = await catchError(route.toPathItems())
 
     if (error) {
       throw new Error(`Failed to generated openapi for route: ${route.data.pattern}`, { cause: error })
     }
 
-    const data = this.paths[route.path] ?? {}
-    Object.assign(data, schema)
-
-    if (!this.paths[route.path]) this.paths[route.path] = data
+    for (const [path, schema] of Object.entries(items)) {
+      this.paths[path] = Object.assign(this.paths[path] ?? {}, schema)
+    }
   }
 }

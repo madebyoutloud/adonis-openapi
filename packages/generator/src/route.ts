@@ -48,18 +48,51 @@ const STATUS_TEXT: Record<number, string> = {
   504: 'Gateway Timeout',
 }
 
+interface PathVariant {
+  path: string
+  params: string[]
+}
+
 export class Route {
+  /**
+   * `types` is missing for routes outside of the registry,
+   * those are documented by path parameters and metadata only.
+   */
   constructor(
     public name: string,
     public data: RouteData,
-    private context: Context,
+    private types: Context | undefined,
     private meta: Meta,
   ) {
 
   }
 
-  get path() {
-    return this.data.pattern.replace(/:(\w+)\??/g, '{$1}')
+  private get context(): Context {
+    if (!this.types) throw new Error(`Route '${this.name}' has no types`)
+
+    return this.types
+  }
+
+  /**
+   * OpenAPI path parameters are always required, so every optional
+   * parameter doubles the paths, e.g. `/posts/:id?` is documented
+   * as both `/posts` and `/posts/{id}`.
+   */
+  get paths(): PathVariant[] {
+    const segments = this.data.pattern.split('/')
+    const optional = segments.filter((item) => /^:\w+\?$/.test(item))
+
+    return Array.from({ length: 2 ** optional.length }, (_, mask) => {
+      const included = segments.filter((item) => {
+        const index = optional.indexOf(item)
+        return index === -1 || (mask & (1 << index)) !== 0
+      })
+
+      return {
+        path: included.join('/').replace(/:(\w+)\??/g, '{$1}') || '/',
+        params: included.flatMap((item) => [...item.matchAll(/:(\w+)/g)].map((match) => match[1]!)),
+      }
+    })
   }
 
   getReference(type: RouteSchemaType): Reference | undefined {
@@ -97,8 +130,13 @@ export class Route {
     return await this.context.withRef(reference, () => this.context.toSchema(prop.type))
   }
 
+  /**
+   * Operation without path parameters, those differ per path variant.
+   */
   async toOperation(): Promise<OpenAPIV3_1.OperationObject> {
-    const parameters = await this.getParameters()
+    if (!this.types) return {}
+
+    const parameters = await this.getQuery()
     const requestBody = await this.getRequestBody()
     const responses = await this.getResponses()
 
@@ -111,7 +149,7 @@ export class Route {
     return result
   }
 
-  async toPathItem(): Promise<OpenAPIV3_1.PathItemObject> {
+  async toPathItems(): Promise<Record<string, OpenAPIV3_1.PathItemObject>> {
     const operation = await this.toOperation()
 
     const methods = this.data.methods.slice(0)
@@ -119,12 +157,18 @@ export class Route {
       methods.splice(methods.indexOf('HEAD'), 1)
     }
 
-    return Object.fromEntries(methods.map((method) => {
+    return Object.fromEntries(this.paths.map(({ path, params }) => {
+      const parameters = [...this.getPathParameters(params), ...(operation.parameters ?? [])]
+      const pathOperation = parameters.length ? { ...operation, parameters } : operation
+
       return [
-        method.toLowerCase(), {
-          ...operation,
-          ...this.meta.get(method, this.data.pattern),
-        },
+        path,
+        Object.fromEntries(methods.map((method) => [
+          method.toLowerCase(), {
+            ...pathOperation,
+            ...this.meta.get(method, this.data.pattern),
+          },
+        ])),
       ]
     }))
   }
@@ -233,12 +277,11 @@ export class Route {
     return true
   }
 
-  private getPathParameters(): OpenAPIV3_1.ParameterObject[] {
-    const names = [...this.data.pattern.matchAll(/:(\w+)/g)].map((item) => item[1]!)
+  private getPathParameters(names: string[]): OpenAPIV3_1.ParameterObject[] {
     return names.map<OpenAPIV3_1.ParameterObject>((name) => ({
-      name: name.replace(/\?$/, ''),
+      name,
       in: 'path',
-      required: !name.endsWith('?'),
+      required: true,
       schema: { type: ['string', 'integer'] } as any,
     }))
   }
@@ -281,24 +324,29 @@ export class Route {
     return result.toSorted((a, b) => a.name.localeCompare(b.name))
   }
 
-  private async getParameters(): Promise<OpenAPIV3_1.ParameterObject[]> {
-    return [...this.getPathParameters(), ...(await this.getQuery())]
-  }
-
   private detectContentType(body: OpenAPIV3_1.SchemaObject) {
     const schemas = (body.oneOf ? body.oneOf : [body])
 
     for (const schema of schemas) {
       const properties = 'properties' in schema ? schema.properties ?? {} : {}
-      const hasBinary = Object.values(properties)
-        .some((item) => {
-          const prop = '$raw' in item ? item.$raw as SchemaObject : item
-          return 'type' in prop && prop.type === 'string' && prop.format === 'binary'
-        })
+      const hasBinary = Object.values(properties).some((item) => this.isBinary(item))
 
       if (hasBinary) return 'multipart/form-data'
     }
 
     return 'application/json'
+  }
+
+  /**
+   * Looks through component references, unions and arrays,
+   * e.g. optional file or a list of files.
+   */
+  private isBinary(item: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject): boolean {
+    const schema = ('$raw' in item ? item.$raw : item) as SchemaObject
+
+    if (schema.type === 'string' && schema.format === 'binary') return true
+    if (schema.type === 'array') return this.isBinary(schema.items)
+
+    return [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some((child) => this.isBinary(child))
   }
 }

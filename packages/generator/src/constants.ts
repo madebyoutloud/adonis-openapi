@@ -1,6 +1,6 @@
 import type { Handler, SchemaObjectType } from './types.ts'
 
-import { LucidHandler } from './handlers/lucid.ts'
+import { LucidHandler, LucidPaginatorHandler } from './handlers/lucid.ts'
 
 export const primitiveTypes: SchemaObjectType[] = [
   'boolean',
@@ -22,5 +22,18 @@ export const defaultHandlers: Handler[] = [
     name: 'MultipartFile',
     schema: () => ({ type: 'string', format: 'binary' }),
   },
+  {
+    // global File and Blob, part of the VineJS file input type
+    text: /^(?:File|Blob)$/,
+    test: (type) => type.getSymbol()?.getDeclarations()
+      .some((item) => /\/(?:@types\/node|typescript\/lib)\//.test(item.getSourceFile().getFilePath())) ?? false,
+    schema: () => ({ type: 'string', format: 'binary' }),
+  },
+  {
+    path: /\/@boringnode\/encryption/,
+    name: 'CypherText',
+    schema: () => ({ type: 'string' }),
+  },
+  new LucidPaginatorHandler(),
   new LucidHandler(),
 ]

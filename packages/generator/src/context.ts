@@ -52,7 +52,7 @@ export class Context {
       throw new Error(`Expected to find a declaration for symbol '${prop.getName()}'.`)
     }
 
-    const type = node.getType()
+    const type = this.symbolType(prop)
 
     if (Array.isArray(path) && path.length > 1) {
       return this.property(path.slice(1), type)
@@ -70,7 +70,15 @@ export class Context {
       return this.property(path, parent).type
     }
 
-    return path.getValueDeclarationOrThrow().getType()
+    return this.symbolType(path)
+  }
+
+  /**
+   * Instantiated type of a symbol, e.g. `User` for `value` of `Box<User>`.
+   * The type of its declaration would be the generic `T` instead.
+   */
+  symbolType(symbol: TsMorph.Symbol) {
+    return symbol.getTypeAtLocation(this.data.node)
   }
 
   component(reference: Reference): Component | undefined
@@ -122,7 +130,7 @@ export class Context {
   isOptional(prop: TsMorph.Symbol) {
     if (prop.isOptional()) return true
 
-    const type = prop.getValueDeclaration()?.getType() ?? prop.getTypeAtLocation(this.data.node)
+    const type = this.symbolType(prop)
 
     if (!type.isUnion()) return type.isUndefined()
 
@@ -149,13 +157,14 @@ export class Context {
 
   // eslint-disable-next-line complexity
   private async $toSchema(type: TsMorph.Type): Promise<SchemaObject> {
-    if (type.isUnion()) return this.unionToSchema(type)
-    if (type.isIntersection()) return this.intersectionToSchema(type)
-
     const handler = this.data.handlers.match(type, this)
     if (handler) return handler.schema(type, this)
 
-    if (type.isNumber() || type.isNumberLiteral()) return { type: 'number' }
+    if (type.isUnion()) return this.unionToSchema(type)
+    if (type.isIntersection()) return this.intersectionToSchema(type)
+
+    if (type.isNumberLiteral()) return { type: 'number', enum: [type.getLiteralValue()] }
+    if (type.isNumber()) return { type: 'number' }
     if (type.isBoolean() || type.isBooleanLiteral()) return { type: 'boolean' }
     if (type.isStringLiteral()) return { type: 'string', enum: [type.getLiteralValue()] }
     if (type.isString()) return { type: 'string' }
@@ -202,6 +211,9 @@ export class Context {
   }
 
   jsonToSchema(symbol: TsMorph.Symbol): Promise<SchemaObject> {
+    const [signature] = this.symbolType(symbol).getCallSignatures()
+    if (signature) return this.toSchema(signature.getReturnType())
+
     const declaration = symbol.getValueDeclarationOrThrow() as FunctionDeclaration
     return this.toSchema(declaration.getReturnType())
   }
@@ -251,11 +263,7 @@ export class Context {
     const required: string[] = []
 
     const rawProperties = type.getProperties()
-      .map((item) => {
-        const propType = item.getValueDeclaration()?.getType() ?? item.getTypeAtLocation(this.data.node)
-
-        return [item, propType] as const
-      })
+      .map((item) => [item, this.symbolType(item)] as const)
       .filter(([,propType]) => this.isSerializable(propType))
 
     const properties = await Promise.all(rawProperties.map(async ([prop, propType]) => {
@@ -271,6 +279,14 @@ export class Context {
     }
 
     if (required.length) result.required = required.toSorted()
+
+    // e.g. Record<string, number>, skipped for any/unknown values as that is the default
+    const indexType = type.getStringIndexType() ?? type.getNumberIndexType()
+    const additionalProperties = indexType && await this.child(indexType).toSchema()
+
+    if (additionalProperties && Object.keys(additionalProperties).length) {
+      result.additionalProperties = additionalProperties
+    }
 
     return result
   }

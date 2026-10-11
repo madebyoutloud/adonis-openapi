@@ -26,6 +26,8 @@ export type Resolver = (specifier: string, parent?: string | URL) => string
 export interface Meta {
   compute(): void
   get(method: string, path: string): OpenAPIV3_1.OperationObject | undefined
+  /** Routes with metadata, optional for compatibility with older providers */
+  routes?(): RouteInfo[]
 }
 
 export interface GeneratorConfig {

@@ -4,9 +4,13 @@ variables:
     value: publish
     options: [publish, docs]
 
-stages: [publish, deploy]
+stages: [test, publish, deploy]
 
 include:
+  - component: $OUTLOUD_CI/test-nodejs@4
+    inputs:
+      name: test
+
   - component: $OUTLOUD_CI/publish-npm@4
     inputs:
       name: openapi

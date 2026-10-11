@@ -17,6 +17,14 @@ export class Meta {
     return this.computed.get(`${method}:${path}`)
   }
 
+  routes() {
+    // e.g. resource routes removed by `apiOnly()` keep their metadata
+    return [...this.data.keys()].filter((route) => !route.isDeleted()).map((route) => {
+      const { methods, pattern } = route.toJSON()
+      return { methods, pattern }
+    })
+  }
+
   compute() {
     for (const [route, value] of this.data) {
       const serialized = route.toJSON()

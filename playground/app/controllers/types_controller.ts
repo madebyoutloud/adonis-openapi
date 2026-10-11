@@ -1,5 +1,5 @@
 import encryption from '@adonisjs/core/services/encryption'
-import { DateTime } from 'luxon'
+import { DateTime, Duration, Interval } from 'luxon'
 import { Money } from '#types/money'
 
 enum Visibility {
@@ -103,6 +103,8 @@ export default class TypesController {
     return {
       encrypted: encryption.encrypt('test'),
       timestamp: DateTime.now(),
+      duration: Duration.fromObject({ day: 1 }),
+      interval: Interval.fromDateTimes(DateTime.now(), DateTime.now()),
     }
   }
 

@@ -16,7 +16,6 @@ export default defineConfig({
   unbundle: true,
   platform: 'node',
   target: 'es2022',
-  tsconfig: 'tsconfig.build.json',
   deps: {
     skipNodeModulesBundle: true,
   },

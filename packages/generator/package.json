@@ -35,7 +35,7 @@
     "ts-morph": "^28.0.0"
   },
   "devDependencies": {
-    "@adonisjs/core": "^7.3.1",
+    "@adonisjs/core": "^7.5.2",
     "@adonisjs/lucid": "^22.4.2",
     "@adonisjs/tsconfig": "^2.0.0",
     "@outloud/eslint-config": "^3.0.3",
