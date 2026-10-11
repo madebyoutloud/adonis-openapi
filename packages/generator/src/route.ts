@@ -341,12 +341,19 @@ export class Route {
    * Looks through component references, unions and arrays,
    * e.g. optional file or a list of files.
    */
-  private isBinary(item: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject): boolean {
-    const schema = ('$raw' in item ? item.$raw : item) as SchemaObject
+  private isBinary(item: OpenAPIV3_1.SchemaObject | OpenAPIV3_1.ReferenceObject | undefined): boolean {
+    if (!item) return false
+
+    const schema = ('$raw' in item ? item.$raw : item) as SchemaObject & { prefixItems?: SchemaObject[] }
 
     if (schema.type === 'string' && schema.format === 'binary') return true
-    if (schema.type === 'array') return this.isBinary(schema.items)
 
-    return [...(schema.oneOf ?? []), ...(schema.anyOf ?? [])].some((child) => this.isBinary(child))
+    // tuples have `prefixItems` only, see `Context.tupleToSchema`
+    return [
+      'items' in schema ? schema.items : undefined,
+      ...(schema.prefixItems ?? []),
+      ...(schema.oneOf ?? []),
+      ...(schema.anyOf ?? []),
+    ].some((child) => this.isBinary(child))
   }
 }

@@ -6,6 +6,7 @@ export const createPostValidator = vine.compile(
     body: vine.string(),
     status: vine.enum(['draft', 'published']),
     tags: vine.array(vine.string()).optional(),
+    location: vine.tuple([vine.number(), vine.number()]).optional(),
     publishedAt: vine.date().nullable(),
     seo: vine.object({
       title: vine.string().optional(),
