@@ -37,6 +37,11 @@ export interface GeneratorConfig {
     exclude?: string[]
   }
   handlers?: Handler[]
+  /**
+   * Methods documented for the resource `update` action, which accepts both PUT and PATCH.
+   * @default ['PUT', 'PATCH']
+   */
+  resourceUpdateMethods?: ('PUT' | 'PATCH')[]
 }
 
 export interface GeneratorOptions {

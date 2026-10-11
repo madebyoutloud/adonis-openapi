@@ -21,6 +21,7 @@ const openapiConfig = defineConfig({
     resolve: import.meta.resolve,
     routes: true,
     handlers: [decimalHandler],
+    resourceUpdateMethods: ['PATCH'],
   },
 })
 

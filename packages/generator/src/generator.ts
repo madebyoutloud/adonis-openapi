@@ -103,7 +103,7 @@ export class Generator {
     this.routes = Object.entries(routes as Record<string, RouteInfo>)
       .map(([name, info]) => {
         const types = context.propType([name, 'types'])
-        return new Route(name, info, this.context(types), this.options.meta)
+        return new Route(name, this.filterResourceMethods(name, info), this.context(types), this.options.meta)
       })
 
     // The registry skips unnamed routes (e.g. closures), keep those with metadata
@@ -115,6 +115,21 @@ export class Generator {
       if (info.methods.some((method) => known.has(`${method}:${info.pattern}`))) continue
 
       this.routes.push(new Route(info.pattern, info, undefined, this.options.meta))
+    }
+  }
+
+  /**
+   * Resource routes are named `<resource>.<action>`, the `update` action
+   * accepts both PUT and PATCH and is documented with `resourceUpdateMethods` only.
+   */
+  private filterResourceMethods(name: string, info: RouteInfo): RouteInfo {
+    const allowed: string[] | undefined = this.config.resourceUpdateMethods
+    if (!allowed || !name.endsWith('.update')) return info
+    if (!info.methods.includes('PUT') || !info.methods.includes('PATCH')) return info
+
+    return {
+      ...info,
+      methods: info.methods.filter((method) => !['PUT', 'PATCH'].includes(method) || allowed.includes(method)),
     }
   }
 

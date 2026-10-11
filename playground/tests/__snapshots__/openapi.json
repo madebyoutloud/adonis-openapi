@@ -433,15 +433,89 @@
       },
       "TypesCustomResponse": {
         "properties": {
+          "duration": {
+            "type": "string"
+          },
           "encrypted": {
             "$ref": "#/components/schemas/CypherText"
+          },
+          "interval": {
+            "oneOf": [
+              {
+                "properties": {
+                  "end": {
+                    "type": "string"
+                  },
+                  "invalidExplanation": {
+                    "type": "null"
+                  },
+                  "invalidReason": {
+                    "type": "null"
+                  },
+                  "isValid": {
+                    "type": "boolean"
+                  },
+                  "lastDateTime": {
+                    "type": "string"
+                  },
+                  "start": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "end",
+                  "invalidExplanation",
+                  "invalidReason",
+                  "isValid",
+                  "lastDateTime",
+                  "start"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "end": {
+                    "type": "null"
+                  },
+                  "invalidExplanation": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "invalidReason": {
+                    "type": "string"
+                  },
+                  "isValid": {
+                    "type": "boolean"
+                  },
+                  "lastDateTime": {
+                    "type": "null"
+                  },
+                  "start": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "end",
+                  "invalidExplanation",
+                  "invalidReason",
+                  "isValid",
+                  "lastDateTime",
+                  "start"
+                ],
+                "type": "object"
+              }
+            ]
           },
           "timestamp": {
             "type": "string"
           }
         },
         "required": [
+          "duration",
           "encrypted",
+          "interval",
           "timestamp"
         ],
         "type": "object"
@@ -1099,52 +1173,6 @@
         ]
       },
       "patch": {
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": [
-                "string",
-                "integer"
-              ]
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdatePostProps"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/PostsUpdateResponse"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "security": [
-          {
-            "bearer": []
-          }
-        ],
-        "summary": "Update post",
-        "tags": [
-          "Posts"
-        ]
-      },
-      "put": {
         "parameters": [
           {
             "in": "path",
