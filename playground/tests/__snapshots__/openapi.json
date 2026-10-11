@@ -1,6 +1,55 @@
 {
   "components": {
     "schemas": {
+      "CamelCasePaginatorMeta": {
+        "properties": {
+          "currentPage": {
+            "type": "number"
+          },
+          "firstPage": {
+            "type": "number"
+          },
+          "firstPageUrl": {
+            "type": "string"
+          },
+          "lastPage": {
+            "type": "number"
+          },
+          "lastPageUrl": {
+            "type": "string"
+          },
+          "nextPageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "perPage": {
+            "type": "number"
+          },
+          "previousPageUrl": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "currentPage",
+          "firstPage",
+          "firstPageUrl",
+          "lastPage",
+          "lastPageUrl",
+          "nextPageUrl",
+          "perPage",
+          "previousPageUrl",
+          "total"
+        ],
+        "type": "object"
+      },
       "Comment": {
         "properties": {
           "author": {
@@ -44,6 +93,30 @@
         "properties": {
           "body": {
             "type": "string"
+          },
+          "location": {
+            "oneOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  },
+                  {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  }
+                ],
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "publishedAt": {
             "type": [
@@ -276,53 +349,7 @@
             "type": "array"
           },
           "meta": {
-            "properties": {
-              "current_page": {
-                "type": "number"
-              },
-              "first_page": {
-                "type": "number"
-              },
-              "first_page_url": {
-                "type": "string"
-              },
-              "last_page": {
-                "type": "number"
-              },
-              "last_page_url": {
-                "type": "string"
-              },
-              "next_page_url": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "per_page": {
-                "type": "number"
-              },
-              "previous_page_url": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "total": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "current_page",
-              "first_page",
-              "first_page_url",
-              "last_page",
-              "last_page_url",
-              "next_page_url",
-              "per_page",
-              "previous_page_url",
-              "total"
-            ],
-            "type": "object"
+            "$ref": "#/components/schemas/SnakeCasePaginatorMeta"
           }
         },
         "required": [
@@ -362,6 +389,55 @@
       },
       "PostsUpdateResponse": {
         "$ref": "#/components/schemas/Post"
+      },
+      "SnakeCasePaginatorMeta": {
+        "properties": {
+          "current_page": {
+            "type": "number"
+          },
+          "first_page": {
+            "type": "number"
+          },
+          "first_page_url": {
+            "type": "string"
+          },
+          "last_page": {
+            "type": "number"
+          },
+          "last_page_url": {
+            "type": "string"
+          },
+          "next_page_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "per_page": {
+            "type": "number"
+          },
+          "previous_page_url": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "total": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "current_page",
+          "first_page",
+          "first_page_url",
+          "last_page",
+          "last_page_url",
+          "next_page_url",
+          "per_page",
+          "previous_page_url",
+          "total"
+        ],
+        "type": "object"
       },
       "TypesCollectionsResponse": {
         "properties": {
@@ -941,53 +1017,7 @@
             "type": "array"
           },
           "meta": {
-            "properties": {
-              "currentPage": {
-                "type": "number"
-              },
-              "firstPage": {
-                "type": "number"
-              },
-              "firstPageUrl": {
-                "type": "string"
-              },
-              "lastPage": {
-                "type": "number"
-              },
-              "lastPageUrl": {
-                "type": "string"
-              },
-              "nextPageUrl": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "perPage": {
-                "type": "number"
-              },
-              "previousPageUrl": {
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "total": {
-                "type": "number"
-              }
-            },
-            "required": [
-              "currentPage",
-              "firstPage",
-              "firstPageUrl",
-              "lastPage",
-              "lastPageUrl",
-              "nextPageUrl",
-              "perPage",
-              "previousPageUrl",
-              "total"
-            ],
-            "type": "object"
+            "$ref": "#/components/schemas/CamelCasePaginatorMeta"
           }
         },
         "required": [

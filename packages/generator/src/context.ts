@@ -32,6 +32,10 @@ export class Context {
     return this.data.node
   }
 
+  get root() {
+    return this.data.root
+  }
+
   child(type: TsMorph.Type) {
     return new Context(type, this.data, this.depth + 1)
   }

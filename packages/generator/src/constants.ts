@@ -1,6 +1,7 @@
 import type { Handler, SchemaObjectType } from './types.ts'
 
-import { LucidHandler, LucidPaginatorHandler } from './handlers/lucid.ts'
+import { LucidHandler } from './handlers/lucid.ts'
+import { LucidPaginatorHandler } from './handlers/lucid_paginator.ts'
 
 export const primitiveTypes: SchemaObjectType[] = [
   'boolean',
