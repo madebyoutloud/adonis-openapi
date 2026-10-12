@@ -509,89 +509,15 @@
       },
       "TypesCustomResponse": {
         "properties": {
-          "duration": {
-            "type": "string"
-          },
           "encrypted": {
             "$ref": "#/components/schemas/CypherText"
-          },
-          "interval": {
-            "oneOf": [
-              {
-                "properties": {
-                  "end": {
-                    "type": "string"
-                  },
-                  "invalidExplanation": {
-                    "type": "null"
-                  },
-                  "invalidReason": {
-                    "type": "null"
-                  },
-                  "isValid": {
-                    "type": "boolean"
-                  },
-                  "lastDateTime": {
-                    "type": "string"
-                  },
-                  "start": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "end",
-                  "invalidExplanation",
-                  "invalidReason",
-                  "isValid",
-                  "lastDateTime",
-                  "start"
-                ],
-                "type": "object"
-              },
-              {
-                "properties": {
-                  "end": {
-                    "type": "null"
-                  },
-                  "invalidExplanation": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "invalidReason": {
-                    "type": "string"
-                  },
-                  "isValid": {
-                    "type": "boolean"
-                  },
-                  "lastDateTime": {
-                    "type": "null"
-                  },
-                  "start": {
-                    "type": "null"
-                  }
-                },
-                "required": [
-                  "end",
-                  "invalidExplanation",
-                  "invalidReason",
-                  "isValid",
-                  "lastDateTime",
-                  "start"
-                ],
-                "type": "object"
-              }
-            ]
           },
           "timestamp": {
             "type": "string"
           }
         },
         "required": [
-          "duration",
           "encrypted",
-          "interval",
           "timestamp"
         ],
         "type": "object"

@@ -103,8 +103,6 @@ export default class TypesController {
     return {
       encrypted: encryption.encrypt('test'),
       timestamp: DateTime.now(),
-      duration: Duration.fromObject({ day: 1 }),
-      interval: Interval.fromDateTimes(DateTime.now(), DateTime.now()),
     }
   }
 
