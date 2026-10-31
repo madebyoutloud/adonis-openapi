@@ -1,4 +1,5 @@
 import stringHelpers from '@adonisjs/core/helpers/string'
+import type TsMorph from 'ts-morph'
 import { compare } from './helpers.ts'
 
 const IGNORED_FOLDER_NAMES = [
@@ -10,6 +11,12 @@ const IGNORED_FOLDER_NAMES = [
 const regex = /^import\((?:'|")([^'"]+)(?:'|")\)\.(\w+)$/
 
 export class Reference {
+  /**
+   * Name of the type declaration, preferred over the export name for the component name.
+   * Those differ e.g. in shared chunks of bundled packages, which export `Token` as `s`.
+   */
+  declaredName?: string
+
   constructor(
     public name: string,
     public path: string,
@@ -23,7 +30,7 @@ export class Reference {
   }
 
   get normalizeName() {
-    return stringHelpers.pascalCase(this.name)
+    return stringHelpers.pascalCase(this.declaredName ?? this.name)
   }
 
   static test(text: string) {
@@ -38,6 +45,23 @@ export class Reference {
     const match = text.match(regex)
 
     if (match) return new this(match[2]!, match[1]!)
+  }
+
+  static fromType(type: TsMorph.Type) {
+    return this.try(type.getText())?.useDeclaredName(type)
+  }
+
+  /**
+   * Skipped for anonymous types, e.g. `__type`, `__object` or `default`.
+   */
+  useDeclaredName(type: TsMorph.Type) {
+    const name = (type.getAliasSymbol() ?? type.getSymbol())?.getName()
+
+    if (name && name !== 'default' && /^[a-z][\w$]*$/i.test(name)) {
+      this.declaredName = name
+    }
+
+    return this
   }
 
   async load() {
@@ -63,7 +87,7 @@ export class Reference {
 
     // if export name is called 'default' we do not want to add it
     // e.g. import('#controllers/user.controller').default
-    // also skip path part if it equals to export name
+    // also skip path part if it equals to the name
     // e.g. import('#models/user').User
     const name = this.normalizeName
     if (this.name !== 'default' && parts[parts.length - 1] !== name) {

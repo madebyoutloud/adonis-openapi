@@ -1,6 +1,7 @@
 import encryption from '@adonisjs/core/services/encryption'
-import { DateTime, Duration, Interval } from 'luxon'
+import { DateTime } from 'luxon'
 import { Money } from '#types/money'
+import { issueToken } from '#types/bundled/index'
 
 enum Visibility {
   Public = 'public',
@@ -116,6 +117,12 @@ export default class TypesController {
     return {
       page: { items: [], total: 0 },
       envelope: new Envelope({ kind: 'circle', radius: 1 }),
+    }
+  }
+
+  async bundled() {
+    return {
+      token: issueToken('api'),
     }
   }
 }

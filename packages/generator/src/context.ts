@@ -99,7 +99,7 @@ export class Context {
   tryRef(type: TsMorph.Type) {
     const data = Reference.test(type.getText())
 
-    if (data) return this.ref(data.name, data.path)
+    if (data) return this.ref(data.name, data.path).useDeclaredName(type)
   }
 
   ref(name: string, path: string, initial?: number) {
@@ -148,7 +148,7 @@ export class Context {
   }
 
   async toSchema(type = this.type): Promise<SchemaObject> {
-    const reference = Reference.try(type.getText())
+    const reference = Reference.fromType(type)
 
     if (reference) {
       const data = await this.withRef(reference, () => this.$toSchema(type))

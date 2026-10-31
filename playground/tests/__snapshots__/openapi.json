@@ -439,6 +439,39 @@
         ],
         "type": "object"
       },
+      "Token": {
+        "properties": {
+          "abilities": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "name": {
+            "type": "string"
+          },
+          "value": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "abilities",
+          "name",
+          "value"
+        ],
+        "type": "object"
+      },
+      "TypesBundledResponse": {
+        "properties": {
+          "token": {
+            "$ref": "#/components/schemas/Token"
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "type": "object"
+      },
       "TypesCollectionsResponse": {
         "properties": {
           "addresses": {
@@ -1439,6 +1472,25 @@
     "/health": {
       "get": {
         "summary": "Health check"
+      }
+    },
+    "/types/bundled": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesBundledResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
       }
     },
     "/types/collections": {
