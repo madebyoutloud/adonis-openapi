@@ -1,5 +1,5 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "scripts": {
     "build": "pnpm --filter './packages/*' build",
     "test": "pnpm --filter playground exec vitest run",
