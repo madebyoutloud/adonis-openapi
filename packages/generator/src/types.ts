@@ -42,6 +42,12 @@ export interface GeneratorConfig {
    * @default ['PUT', 'PATCH']
    */
   resourceUpdateMethods?: ('PUT' | 'PATCH')[]
+  /**
+   * Statuses read from Tuyau's `rawResponse`. 'success' skips the error members, for apps
+   * that declare error responses in `document`.
+   * @default 'all'
+   */
+  rawResponses?: 'all' | 'success'
 }
 
 export interface GeneratorOptions {

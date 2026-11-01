@@ -103,7 +103,8 @@ export class Generator {
     this.routes = Object.entries(routes as Record<string, RouteInfo>)
       .map(([name, info]) => {
         const types = context.propType([name, 'types'])
-        return new Route(name, this.filterResourceMethods(name, info), this.context(types), this.options.meta)
+        const data = this.filterResourceMethods(name, info)
+        return new Route(name, data, this.context(types), this.options.meta, this.config)
       })
 
     // The registry skips unnamed routes (e.g. closures), keep those with metadata
@@ -114,7 +115,7 @@ export class Generator {
     for (const info of this.options.meta.routes?.() ?? []) {
       if (info.methods.some((method) => known.has(`${method}:${info.pattern}`))) continue
 
-      this.routes.push(new Route(info.pattern, info, undefined, this.options.meta))
+      this.routes.push(new Route(info.pattern, info, undefined, this.options.meta, this.config))
     }
   }
 
