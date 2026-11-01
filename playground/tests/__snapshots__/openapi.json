@@ -97,20 +97,12 @@
           "location": {
             "oneOf": [
               {
-                "prefixItems": [
-                  {
-                    "type": [
-                      "string",
-                      "number"
-                    ]
-                  },
-                  {
-                    "type": [
-                      "string",
-                      "number"
-                    ]
-                  }
-                ],
+                "items": {
+                  "type": [
+                    "string",
+                    "number"
+                  ]
+                },
                 "type": "array"
               },
               {
@@ -278,10 +270,6 @@
         ],
         "type": "object"
       },
-      "MultipartFile": {
-        "format": "binary",
-        "type": "string"
-      },
       "Post": {
         "properties": {
           "author": {
@@ -389,6 +377,31 @@
       },
       "PostsUpdateResponse": {
         "$ref": "#/components/schemas/Post"
+      },
+      "SimpleError": {
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "index": {
+            "type": "number"
+          },
+          "message": {
+            "type": "string"
+          },
+          "meta": {
+            "type": "object"
+          },
+          "rule": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "field",
+          "message",
+          "rule"
+        ],
+        "type": "object"
       },
       "SnakeCasePaginatorMeta": {
         "properties": {
@@ -879,7 +892,98 @@
             "oneOf": [
               {
                 "items": {
-                  "$ref": "#/components/schemas/MultipartFile"
+                  "oneOf": [
+                    {
+                      "format": "binary",
+                      "type": "string"
+                    },
+                    {
+                      "properties": {
+                        "arrayBuffer": {
+                          "type": "object"
+                        },
+                        "bytes": {
+                          "type": "object"
+                        },
+                        "lastModified": {
+                          "type": "number"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "slice": {
+                          "type": "object"
+                        },
+                        "stream": {
+                          "type": "object"
+                        },
+                        "text": {
+                          "type": "object"
+                        },
+                        "textStream": {
+                          "type": "object"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "arrayBuffer",
+                        "bytes",
+                        "lastModified",
+                        "name",
+                        "size",
+                        "slice",
+                        "stream",
+                        "text",
+                        "textStream",
+                        "type"
+                      ],
+                      "type": "object"
+                    },
+                    {
+                      "properties": {
+                        "arrayBuffer": {
+                          "type": "object"
+                        },
+                        "bytes": {
+                          "type": "object"
+                        },
+                        "size": {
+                          "type": "number"
+                        },
+                        "slice": {
+                          "type": "object"
+                        },
+                        "stream": {
+                          "type": "object"
+                        },
+                        "text": {
+                          "type": "object"
+                        },
+                        "textStream": {
+                          "type": "object"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "arrayBuffer",
+                        "bytes",
+                        "size",
+                        "slice",
+                        "stream",
+                        "text",
+                        "textStream",
+                        "type"
+                      ],
+                      "type": "object"
+                    }
+                  ]
                 },
                 "type": "array"
               },
@@ -889,12 +993,194 @@
             ]
           },
           "file": {
-            "$ref": "#/components/schemas/MultipartFile"
+            "oneOf": [
+              {
+                "format": "binary",
+                "type": "string"
+              },
+              {
+                "properties": {
+                  "arrayBuffer": {
+                    "type": "object"
+                  },
+                  "bytes": {
+                    "type": "object"
+                  },
+                  "lastModified": {
+                    "type": "number"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "number"
+                  },
+                  "slice": {
+                    "type": "object"
+                  },
+                  "stream": {
+                    "type": "object"
+                  },
+                  "text": {
+                    "type": "object"
+                  },
+                  "textStream": {
+                    "type": "object"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "arrayBuffer",
+                  "bytes",
+                  "lastModified",
+                  "name",
+                  "size",
+                  "slice",
+                  "stream",
+                  "text",
+                  "textStream",
+                  "type"
+                ],
+                "type": "object"
+              },
+              {
+                "properties": {
+                  "arrayBuffer": {
+                    "type": "object"
+                  },
+                  "bytes": {
+                    "type": "object"
+                  },
+                  "size": {
+                    "type": "number"
+                  },
+                  "slice": {
+                    "type": "object"
+                  },
+                  "stream": {
+                    "type": "object"
+                  },
+                  "text": {
+                    "type": "object"
+                  },
+                  "textStream": {
+                    "type": "object"
+                  },
+                  "type": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "arrayBuffer",
+                  "bytes",
+                  "size",
+                  "slice",
+                  "stream",
+                  "text",
+                  "textStream",
+                  "type"
+                ],
+                "type": "object"
+              }
+            ]
           },
           "thumbnail": {
             "oneOf": [
               {
-                "$ref": "#/components/schemas/MultipartFile"
+                "oneOf": [
+                  {
+                    "format": "binary",
+                    "type": "string"
+                  },
+                  {
+                    "properties": {
+                      "arrayBuffer": {
+                        "type": "object"
+                      },
+                      "bytes": {
+                        "type": "object"
+                      },
+                      "lastModified": {
+                        "type": "number"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "size": {
+                        "type": "number"
+                      },
+                      "slice": {
+                        "type": "object"
+                      },
+                      "stream": {
+                        "type": "object"
+                      },
+                      "text": {
+                        "type": "object"
+                      },
+                      "textStream": {
+                        "type": "object"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "arrayBuffer",
+                      "bytes",
+                      "lastModified",
+                      "name",
+                      "size",
+                      "slice",
+                      "stream",
+                      "text",
+                      "textStream",
+                      "type"
+                    ],
+                    "type": "object"
+                  },
+                  {
+                    "properties": {
+                      "arrayBuffer": {
+                        "type": "object"
+                      },
+                      "bytes": {
+                        "type": "object"
+                      },
+                      "size": {
+                        "type": "number"
+                      },
+                      "slice": {
+                        "type": "object"
+                      },
+                      "stream": {
+                        "type": "object"
+                      },
+                      "text": {
+                        "type": "object"
+                      },
+                      "textStream": {
+                        "type": "object"
+                      },
+                      "type": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "arrayBuffer",
+                      "bytes",
+                      "size",
+                      "slice",
+                      "stream",
+                      "text",
+                      "textStream",
+                      "type"
+                    ],
+                    "type": "object"
+                  }
+                ]
               },
               {
                 "type": "null"
@@ -1021,6 +1307,27 @@
               }
             },
             "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleError"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "errors"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
           }
         },
         "summary": "Upload file",
@@ -1074,6 +1381,27 @@
               }
             },
             "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleError"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "errors"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
           }
         },
         "security": [
@@ -1195,6 +1523,27 @@
               }
             },
             "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleError"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "errors"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
           }
         },
         "security": [
@@ -1306,6 +1655,27 @@
               }
             },
             "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleError"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "errors"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
           }
         },
         "summary": "List users",
@@ -1334,6 +1704,27 @@
               }
             },
             "description": "OK"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "errors": {
+                      "items": {
+                        "$ref": "#/components/schemas/SimpleError"
+                      },
+                      "type": "array"
+                    }
+                  },
+                  "required": [
+                    "errors"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
           }
         },
         "summary": "Create user",
@@ -1357,6 +1748,11 @@
             }
           }
         ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
         "summary": "Delete user",
         "tags": [
           "Users"

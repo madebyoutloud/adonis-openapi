@@ -22,6 +22,7 @@ const openapiConfig = defineConfig({
     routes: true,
     handlers: [decimalHandler],
     resourceUpdateMethods: ['PATCH'],
+    rawResponses: env.get('OPENAPI_RAW_RESPONSES'),
   },
 })
 

@@ -2,7 +2,7 @@ import type { OpenAPIV3_1 } from 'openapi-types'
 import equal from 'fast-deep-equal'
 import type { Context } from './context.ts'
 import type { Reference } from './reference.ts'
-import type { Meta, RouteSchemaType, SchemaObject } from './types.ts'
+import type { GeneratorConfig, Meta, RouteSchemaType, SchemaObject } from './types.ts'
 import type { Component } from './component.ts'
 
 interface RouteData {
@@ -63,6 +63,7 @@ export class Route {
     public data: RouteData,
     private types: Context | undefined,
     private meta: Meta,
+    private config: Pick<GeneratorConfig, 'rawResponses'> = {},
   ) {
 
   }
@@ -240,10 +241,7 @@ export class Route {
       const responseSym = member.getProperty('response')
       const responseType = responseSym?.getTypeAtLocation(node)
 
-      for (const status of this.context.unionToArray(statusType)) {
-        if (!status.isNumberLiteral()) continue
-
-        const code = status.getLiteralValue() as number
+      for (const code of this.getStatusCodes(statusType)) {
         if (!byStatus.has(code)) byStatus.set(code, [])
 
         if (responseType && this.isBodyfulResponse(responseType)) {
@@ -254,12 +252,28 @@ export class Route {
 
     if (!byStatus.size) return
 
+    return this.toResponses(byStatus)
+  }
+
+  private getStatusCodes(statusType: Context['type']): number[] {
+    const codes = this.context.unionToArray(statusType)
+      .filter((status) => status.isNumberLiteral())
+      .map((status) => status.getLiteralValue() as number)
+
+    if (this.config.rawResponses !== 'success') return codes
+    return codes.filter((code) => code >= 200 && code < 300)
+  }
+
+  private async toResponses(byStatus: Map<number, SchemaObject[]>): Promise<OpenAPIV3_1.ResponsesObject> {
+    const named = await this.getNamedSuccess(byStatus)
     const responses: OpenAPIV3_1.ResponsesObject = {}
 
     for (const [code, schemas] of byStatus) {
       const response: OpenAPIV3_1.ResponseObject = { description: STATUS_TEXT[code] ?? String(code) }
 
-      if (schemas.length === 1) {
+      if (named && code === named.code) {
+        response.content = { 'application/json': { schema: named.schema as any } }
+      } else if (schemas.length === 1) {
         response.content = { 'application/json': { schema: schemas[0] as any } }
       } else if (schemas.length > 1) {
         response.content = { 'application/json': { schema: { oneOf: schemas } as any } }
@@ -269,6 +283,21 @@ export class Route {
     }
 
     return responses
+  }
+
+  /**
+   * With one success status, its body is the `response` type, so it keeps the component
+   * name the non-raw path gives it. A 204 never has a body.
+   */
+  private async getNamedSuccess(byStatus: Map<number, SchemaObject[]>) {
+    const codes = [...byStatus.keys()].filter((code) => code >= 200 && code < 300)
+    if (codes.length !== 1 || codes[0] === 204) return
+
+    const { type } = this.context.property('response')
+    if (!this.isBodyfulResponse(type)) return
+
+    const data = await this.resolve('response')
+    return { code: codes[0]!, schema: data.component?.toOpenAPI() ?? data.schema }
   }
 
   private isBodyfulResponse(type: Context['type']): boolean {
