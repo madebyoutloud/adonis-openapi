@@ -31,7 +31,7 @@
     "@adonisjs/lucid": "^22.4.2",
     "@outloud/adonis-openapi": "workspace:*",
     "@outloud/adonis-openapi-generator": "workspace:*",
-    "@tuyau/core": "^1.2.2",
+    "@tuyau/core": "^1.2.3",
     "@vinejs/vine": "^4.3.0",
     "luxon": "^3.7.2",
     "reflect-metadata": "^0.2.2"

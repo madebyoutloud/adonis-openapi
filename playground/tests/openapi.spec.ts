@@ -20,22 +20,43 @@ const env = {
   APP_URL: 'http://localhost:3333',
 }
 
-function ace(...args: string[]) {
-  return exec('node', ['ace', ...args], { cwd: root, env })
+function ace(args: string[], extra: Record<string, string> = {}) {
+  return exec('node', ['ace', ...args], { cwd: root, env: { ...env, ...extra } })
+}
+
+async function generate(extra: Record<string, string> = {}) {
+  await ace(['openapi:generate'], extra)
+  return JSON.parse(await readFile(new URL('.adonisjs/openapi.json', root), 'utf-8'))
+}
+
+function responses(document: any): [string, Record<string, any>][] {
+  return Object.entries(document.paths).flatMap(([path, item]: [string, any]) => {
+    return Object.entries(item).map(([method, operation]: [string, any]) => {
+      return [`${method} ${path}`, operation.responses ?? {}] as [string, Record<string, any>]
+    })
+  })
 }
 
 describe('openapi', () => {
-  let document: string
+  let document: any
 
   beforeAll(async () => {
-    await ace('codegen')
-    await ace('openapi:generate')
-
-    const content = await readFile(new URL('.adonisjs/openapi.json', root), 'utf-8')
-    document = JSON.stringify(JSON.parse(content), null, 2) + '\n'
+    await ace(['codegen'])
+    document = await generate()
   })
 
   it('generates document', async () => {
-    await expect(document).toMatchFileSnapshot('./__snapshots__/openapi.json')
+    await expect(JSON.stringify(document, null, 2) + '\n').toMatchFileSnapshot('./__snapshots__/openapi.json')
+  })
+
+  it('keeps only success responses with rawResponses success', async () => {
+    const success = await generate({ OPENAPI_RAW_RESPONSES: 'success' })
+
+    for (const [operation, all] of responses(document)) {
+      const kept = responses(success).find(([name]) => name === operation)![1]
+      const expected = Object.fromEntries(Object.entries(all).filter(([code]) => Number(code) < 300))
+
+      expect(kept, operation).toEqual(expected)
+    }
   })
 })
