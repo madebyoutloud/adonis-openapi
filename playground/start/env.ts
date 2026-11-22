@@ -23,5 +23,5 @@ export default await Env.create(new URL('../', import.meta.url), {
   APP_URL: Env.schema.string({ format: 'url', tld: false }),
 
   // OpenAPI
-  OPENAPI_RAW_RESPONSES: Env.schema.enum.optional(['all', 'success'] as const),
+  OPENAPI_RESPONSES: Env.schema.enum.optional(['success'] as const),
 })

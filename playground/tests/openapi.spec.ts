@@ -49,8 +49,8 @@ describe('openapi', () => {
     await expect(JSON.stringify(document, null, 2) + '\n').toMatchFileSnapshot('./__snapshots__/openapi.json')
   })
 
-  it('keeps only success responses with rawResponses success', async () => {
-    const success = await generate({ OPENAPI_RAW_RESPONSES: 'success' })
+  it('keeps only success responses with responses success', async () => {
+    const success = await generate({ OPENAPI_RESPONSES: 'success' })
 
     for (const [operation, all] of responses(document)) {
       const kept = responses(success).find(([name]) => name === operation)![1]

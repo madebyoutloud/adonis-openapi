@@ -69,7 +69,7 @@ export class Route {
     public data: RouteData,
     private types: Context | undefined,
     private meta: Meta,
-    private config: Pick<GeneratorConfig, 'rawResponses'> = {},
+    private config: Pick<GeneratorConfig, 'responses'> = {},
   ) {
 
   }
@@ -287,7 +287,7 @@ export class Route {
       .filter((status) => status.isNumberLiteral())
       .map((status) => status.getLiteralValue() as number)
 
-    if (this.config.rawResponses !== 'success') return codes
+    if (this.config.responses !== 'success') return codes
     return codes.filter((code) => code >= 200 && code < 300)
   }
 

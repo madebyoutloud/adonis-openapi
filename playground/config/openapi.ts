@@ -22,7 +22,8 @@ const openapiConfig = defineConfig({
     routes: true,
     handlers: [decimalHandler],
     resourceUpdateMethods: ['PATCH'],
-    rawResponses: env.get('OPENAPI_RAW_RESPONSES'),
+    // switched by tests only
+    responses: env.get('OPENAPI_RESPONSES'),
   },
 })
 
