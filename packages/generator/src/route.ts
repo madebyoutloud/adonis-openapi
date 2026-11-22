@@ -1,9 +1,15 @@
 import type { OpenAPIV3_1 } from 'openapi-types'
+import type TsMorph from 'ts-morph'
 import equal from 'fast-deep-equal'
 import type { Context } from './context.ts'
 import type { Reference } from './reference.ts'
 import type { GeneratorConfig, Meta, RouteSchemaType, SchemaObject } from './types.ts'
 import type { Component } from './component.ts'
+
+/**
+ * Keys Tuyau's `ExtractBody` omits from the validator input, AdonisJS validates them apart from the body.
+ */
+const requestKeys = ['query', 'params', 'headers', 'cookies']
 
 interface RouteData {
   methods: string[]
@@ -123,12 +129,29 @@ export class Route {
   }
 
   async resolve(type: RouteSchemaType): Promise<{ schema: SchemaObject, component?: Component }> {
-    const prop = this.context.property(type)
+    const toSchema = type === 'body'
+      ? () => this.bodyToSchema()
+      : () => this.context.toSchema(this.context.property(type).type)
     const reference = this.getReference(type)
 
-    if (!reference) return { schema: await this.context.toSchema(prop.type) }
+    if (!reference) return { schema: await toSchema() }
 
-    return await this.context.withRef(reference, () => this.context.toSchema(prop.type))
+    return await this.context.withRef(reference, toSchema)
+  }
+
+  /**
+   * Tuyau 1.2.3 wraps the body in `ReplaceMultipartFile`, which turns tuples into arrays and
+   * `File`/`Blob` into plain objects. The validator input in `ExtractBody<T>` still has them,
+   * so read it and omit the keys `ExtractBody` omits.
+   */
+  private async bodyToSchema(): Promise<SchemaObject> {
+    const { node, type } = this.context.property('body')
+    const typeNode = (node as TsMorph.PropertySignature).getTypeNode()
+
+    if (!typeNode?.getText().startsWith('ExtractBody<')) return await this.context.toSchema(type)
+
+    const [input] = (typeNode as TsMorph.TypeReferenceNode).getTypeArguments()
+    return await this.context.toSchema(input!.getType(), { omit: requestKeys })
   }
 
   /**
@@ -194,9 +217,10 @@ export class Route {
   private async getResponses(): Promise<OpenAPIV3_1.ResponsesObject | undefined> {
     // Prefer Tuyau's normalized `rawResponse` union ({ status; response } across
     // all status codes) so every documented response — 201/204 successes and
-    // 4xx errors alike — is emitted with its real code and body.
-    const responses = await this.getRawResponses()
-    if (responses) return responses
+    // 4xx errors alike — is emitted with its real code and body. When it exists it
+    // is the only source: `response` is `never` for a route without a 2xx status.
+    const raw = this.getRawResponseType()
+    if (raw) return await this.getRawResponses(raw)
 
     // Legacy fallback for registries generated before `rawResponse` existed:
     // a single 200 built from `response`.
@@ -217,20 +241,23 @@ export class Route {
     }
   }
 
-  private async getRawResponses(): Promise<OpenAPIV3_1.ResponsesObject | undefined> {
-    let raw
+  /**
+   * Tuyau's `rawResponse` union, missing from registries generated before Tuyau 1.2.3.
+   */
+  private getRawResponseType(): Context['type'] | undefined {
     try {
-      raw = this.context.property('rawResponse')
+      const { type } = this.context.property('rawResponse')
+      return type.isUnknown() ? undefined : type
     } catch {
       return
     }
+  }
 
-    if (raw.type.isUnknown()) return
-
+  private async getRawResponses(raw: Context['type']): Promise<OpenAPIV3_1.ResponsesObject | undefined> {
     const node = this.context.node
-    const byStatus = new Map<number, SchemaObject[]>()
+    const byStatus = new Map<number, Context['type'][]>()
 
-    for (const member of this.context.unionToArray(raw.type)) {
+    for (const member of this.context.unionToArray(raw)) {
       const statusSym = member.getProperty('status')
       if (!statusSym) continue
 
@@ -245,7 +272,7 @@ export class Route {
         if (!byStatus.has(code)) byStatus.set(code, [])
 
         if (responseType && this.isBodyfulResponse(responseType)) {
-          byStatus.get(code)!.push(await this.context.toSchema(responseType))
+          byStatus.get(code)!.push(responseType)
         }
       }
     }
@@ -264,20 +291,15 @@ export class Route {
     return codes.filter((code) => code >= 200 && code < 300)
   }
 
-  private async toResponses(byStatus: Map<number, SchemaObject[]>): Promise<OpenAPIV3_1.ResponsesObject> {
+  private async toResponses(byStatus: Map<number, Context['type'][]>): Promise<OpenAPIV3_1.ResponsesObject> {
     const named = await this.getNamedSuccess(byStatus)
     const responses: OpenAPIV3_1.ResponsesObject = {}
 
-    for (const [code, schemas] of byStatus) {
+    for (const [code, types] of byStatus) {
       const response: OpenAPIV3_1.ResponseObject = { description: STATUS_TEXT[code] ?? String(code) }
+      const schema = named?.code === code ? named.schema : await this.toResponseSchema(types)
 
-      if (named && code === named.code) {
-        response.content = { 'application/json': { schema: named.schema as any } }
-      } else if (schemas.length === 1) {
-        response.content = { 'application/json': { schema: schemas[0] as any } }
-      } else if (schemas.length > 1) {
-        response.content = { 'application/json': { schema: { oneOf: schemas } as any } }
-      }
+      if (schema) response.content = { 'application/json': { schema: schema as any } }
 
       responses[code] = response
     }
@@ -285,11 +307,19 @@ export class Route {
     return responses
   }
 
+  private async toResponseSchema(types: Context['type'][]): Promise<SchemaObject | undefined> {
+    const schemas: SchemaObject[] = []
+    for (const type of types) schemas.push(await this.context.toSchema(type))
+
+    if (schemas.length > 1) return { oneOf: schemas } as SchemaObject
+    return schemas[0]
+  }
+
   /**
    * With one success status, its body is the `response` type, so it keeps the component
    * name the non-raw path gives it. A 204 never has a body.
    */
-  private async getNamedSuccess(byStatus: Map<number, SchemaObject[]>) {
+  private async getNamedSuccess(byStatus: Map<number, Context['type'][]>) {
     const codes = [...byStatus.keys()].filter((code) => code >= 200 && code < 300)
     if (codes.length !== 1 || codes[0] === 204) return
 

@@ -60,6 +60,7 @@ router.group(() => {
   router.get('/generic', [TypesController, 'generic'])
   router.get('/generic-types', [TypesController, 'genericTypes'])
   router.get('/bundled', [TypesController, 'bundled'])
+  router.get('/error-only', [TypesController, 'errorOnly'])
 })
   .prefix('/types')
   .openapi({ tags: ['Types'] })

@@ -1,3 +1,4 @@
+import type { HttpContext } from '@adonisjs/core/http'
 import encryption from '@adonisjs/core/services/encryption'
 import { DateTime } from 'luxon'
 import { Money } from '#types/money'
@@ -124,5 +125,9 @@ export default class TypesController {
     return {
       token: issueToken('api'),
     }
+  }
+
+  async errorOnly({ response }: HttpContext) {
+    return response.notFound({ message: 'Not found' })
   }
 }

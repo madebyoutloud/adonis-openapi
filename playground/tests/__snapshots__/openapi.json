@@ -97,12 +97,20 @@
           "location": {
             "oneOf": [
               {
-                "items": {
-                  "type": [
-                    "string",
-                    "number"
-                  ]
-                },
+                "prefixItems": [
+                  {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  },
+                  {
+                    "type": [
+                      "string",
+                      "number"
+                    ]
+                  }
+                ],
                 "type": "array"
               },
               {
@@ -269,6 +277,10 @@
           "currency"
         ],
         "type": "object"
+      },
+      "MultipartFile": {
+        "format": "binary",
+        "type": "string"
       },
       "Post": {
         "properties": {
@@ -892,98 +904,7 @@
             "oneOf": [
               {
                 "items": {
-                  "oneOf": [
-                    {
-                      "format": "binary",
-                      "type": "string"
-                    },
-                    {
-                      "properties": {
-                        "arrayBuffer": {
-                          "type": "object"
-                        },
-                        "bytes": {
-                          "type": "object"
-                        },
-                        "lastModified": {
-                          "type": "number"
-                        },
-                        "name": {
-                          "type": "string"
-                        },
-                        "size": {
-                          "type": "number"
-                        },
-                        "slice": {
-                          "type": "object"
-                        },
-                        "stream": {
-                          "type": "object"
-                        },
-                        "text": {
-                          "type": "object"
-                        },
-                        "textStream": {
-                          "type": "object"
-                        },
-                        "type": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "arrayBuffer",
-                        "bytes",
-                        "lastModified",
-                        "name",
-                        "size",
-                        "slice",
-                        "stream",
-                        "text",
-                        "textStream",
-                        "type"
-                      ],
-                      "type": "object"
-                    },
-                    {
-                      "properties": {
-                        "arrayBuffer": {
-                          "type": "object"
-                        },
-                        "bytes": {
-                          "type": "object"
-                        },
-                        "size": {
-                          "type": "number"
-                        },
-                        "slice": {
-                          "type": "object"
-                        },
-                        "stream": {
-                          "type": "object"
-                        },
-                        "text": {
-                          "type": "object"
-                        },
-                        "textStream": {
-                          "type": "object"
-                        },
-                        "type": {
-                          "type": "string"
-                        }
-                      },
-                      "required": [
-                        "arrayBuffer",
-                        "bytes",
-                        "size",
-                        "slice",
-                        "stream",
-                        "text",
-                        "textStream",
-                        "type"
-                      ],
-                      "type": "object"
-                    }
-                  ]
+                  "$ref": "#/components/schemas/MultipartFile"
                 },
                 "type": "array"
               },
@@ -993,194 +914,12 @@
             ]
           },
           "file": {
-            "oneOf": [
-              {
-                "format": "binary",
-                "type": "string"
-              },
-              {
-                "properties": {
-                  "arrayBuffer": {
-                    "type": "object"
-                  },
-                  "bytes": {
-                    "type": "object"
-                  },
-                  "lastModified": {
-                    "type": "number"
-                  },
-                  "name": {
-                    "type": "string"
-                  },
-                  "size": {
-                    "type": "number"
-                  },
-                  "slice": {
-                    "type": "object"
-                  },
-                  "stream": {
-                    "type": "object"
-                  },
-                  "text": {
-                    "type": "object"
-                  },
-                  "textStream": {
-                    "type": "object"
-                  },
-                  "type": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "arrayBuffer",
-                  "bytes",
-                  "lastModified",
-                  "name",
-                  "size",
-                  "slice",
-                  "stream",
-                  "text",
-                  "textStream",
-                  "type"
-                ],
-                "type": "object"
-              },
-              {
-                "properties": {
-                  "arrayBuffer": {
-                    "type": "object"
-                  },
-                  "bytes": {
-                    "type": "object"
-                  },
-                  "size": {
-                    "type": "number"
-                  },
-                  "slice": {
-                    "type": "object"
-                  },
-                  "stream": {
-                    "type": "object"
-                  },
-                  "text": {
-                    "type": "object"
-                  },
-                  "textStream": {
-                    "type": "object"
-                  },
-                  "type": {
-                    "type": "string"
-                  }
-                },
-                "required": [
-                  "arrayBuffer",
-                  "bytes",
-                  "size",
-                  "slice",
-                  "stream",
-                  "text",
-                  "textStream",
-                  "type"
-                ],
-                "type": "object"
-              }
-            ]
+            "$ref": "#/components/schemas/MultipartFile"
           },
           "thumbnail": {
             "oneOf": [
               {
-                "oneOf": [
-                  {
-                    "format": "binary",
-                    "type": "string"
-                  },
-                  {
-                    "properties": {
-                      "arrayBuffer": {
-                        "type": "object"
-                      },
-                      "bytes": {
-                        "type": "object"
-                      },
-                      "lastModified": {
-                        "type": "number"
-                      },
-                      "name": {
-                        "type": "string"
-                      },
-                      "size": {
-                        "type": "number"
-                      },
-                      "slice": {
-                        "type": "object"
-                      },
-                      "stream": {
-                        "type": "object"
-                      },
-                      "text": {
-                        "type": "object"
-                      },
-                      "textStream": {
-                        "type": "object"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "arrayBuffer",
-                      "bytes",
-                      "lastModified",
-                      "name",
-                      "size",
-                      "slice",
-                      "stream",
-                      "text",
-                      "textStream",
-                      "type"
-                    ],
-                    "type": "object"
-                  },
-                  {
-                    "properties": {
-                      "arrayBuffer": {
-                        "type": "object"
-                      },
-                      "bytes": {
-                        "type": "object"
-                      },
-                      "size": {
-                        "type": "number"
-                      },
-                      "slice": {
-                        "type": "object"
-                      },
-                      "stream": {
-                        "type": "object"
-                      },
-                      "text": {
-                        "type": "object"
-                      },
-                      "textStream": {
-                        "type": "object"
-                      },
-                      "type": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "arrayBuffer",
-                      "bytes",
-                      "size",
-                      "slice",
-                      "stream",
-                      "text",
-                      "textStream",
-                      "type"
-                    ],
-                    "type": "object"
-                  }
-                ]
+                "$ref": "#/components/schemas/MultipartFile"
               },
               {
                 "type": "null"
@@ -1920,6 +1659,33 @@
               }
             },
             "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/error-only": {
+      "get": {
+        "responses": {
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ],
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Not Found"
           }
         },
         "tags": [

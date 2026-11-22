@@ -17,6 +17,14 @@ interface ContextData {
   resolve: Resolver
 }
 
+export interface SchemaOptions {
+  /**
+   * Properties skipped on the type itself, in each union and intersection member too,
+   * like `DistributiveOmit`. Nested types keep theirs.
+   */
+  omit?: string[]
+}
+
 const maxDepth = 10
 
 export class Context {
@@ -147,8 +155,9 @@ export class Context {
       type.getCallSignatures().length === 0
   }
 
-  async toSchema(type = this.type): Promise<SchemaObject> {
-    const reference = Reference.fromType(type)
+  async toSchema(type = this.type, options: SchemaOptions = {}): Promise<SchemaObject> {
+    // with omitted properties it is not the declared type anymore
+    const reference = options.omit ? undefined : Reference.fromType(type)
 
     if (reference) {
       const data = await this.withRef(reference, () => this.$toSchema(type))
@@ -156,16 +165,16 @@ export class Context {
       return data.component.toOpenAPI()
     }
 
-    return await this.$toSchema(type)
+    return await this.$toSchema(type, options)
   }
 
   // eslint-disable-next-line complexity
-  private async $toSchema(type: TsMorph.Type): Promise<SchemaObject> {
+  private async $toSchema(type: TsMorph.Type, options: SchemaOptions = {}): Promise<SchemaObject> {
     const handler = this.data.handlers.match(type, this)
     if (handler) return handler.schema(type, this)
 
-    if (type.isUnion()) return this.unionToSchema(type)
-    if (type.isIntersection()) return this.intersectionToSchema(type)
+    if (type.isUnion()) return this.unionToSchema(type, options)
+    if (type.isIntersection()) return this.intersectionToSchema(type, options)
 
     if (type.isNumberLiteral()) return { type: 'number', enum: [type.getLiteralValue()] }
     if (type.isNumber()) return { type: 'number' }
@@ -176,32 +185,32 @@ export class Context {
     if (type.isNull()) return { type: 'null' }
     if (type.isTuple()) return this.tupleToSchema(type)
     if (type.isArray()) return this.arrayToSchema(type)
-    if (type.isObject()) return this.objectToSchema(type)
+    if (type.isObject()) return this.objectToSchema(type, options)
 
     return {}
   }
 
-  async intersectionToSchema(type: TsMorph.Type): Promise<SchemaObject> {
+  async intersectionToSchema(type: TsMorph.Type, options: SchemaOptions = {}): Promise<SchemaObject> {
     const schemas = await Promise.all(type.getIntersectionTypes()
-      .map((item) => this.$toSchema(item)))
+      .map((item) => this.$toSchema(item, options)))
 
     return mergeSchemas(...schemas)
   }
 
-  async unionToSchema(type: TsMorph.Type): Promise<SchemaObject> {
+  async unionToSchema(type: TsMorph.Type, options: SchemaOptions = {}): Promise<SchemaObject> {
     let schemas: SchemaObject[]
     const types = type.getUnionTypes()
       .filter((item) => this.isSerializable(item))
 
     if (type.isNullable()) {
-      schemas = [await this.toSchema(type.getNonNullableType())]
+      schemas = [await this.toSchema(type.getNonNullableType(), options)]
 
       if (types.some((item) => item.isNull())) {
         schemas.push({ type: 'null' })
       }
     } else {
       schemas = await Promise.all(
-        types.map((item) => this.toSchema(item)),
+        types.map((item) => this.toSchema(item, options)),
       )
     }
 
@@ -256,7 +265,7 @@ export class Context {
     }
   }
 
-  async objectToSchema(type: TsMorph.Type): Promise<SchemaObject> {
+  async objectToSchema(type: TsMorph.Type, { omit = [] }: SchemaOptions = {}): Promise<SchemaObject> {
     const toJSON = type.getProperty('toOpenAPI') ?? type.getProperty('toJSON')
     if (toJSON) return this.jsonToSchema(toJSON)
 
@@ -267,6 +276,7 @@ export class Context {
     const required: string[] = []
 
     const rawProperties = type.getProperties()
+      .filter((item) => !omit.includes(item.getName()))
       .map((item) => [item, this.symbolType(item)] as const)
       .filter(([,propType]) => this.isSerializable(propType))
 

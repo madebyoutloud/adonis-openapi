@@ -22,9 +22,9 @@ export default class PostsController {
     return Post.create({ title, body, status, tags, publishedAt })
   }
 
-  async update({ params, request }: HttpContext) {
+  async update({ request }: HttpContext) {
+    const { params, ...data } = await request.validateUsing(updatePostValidator)
     const post = await Post.findOrFail(params.id)
-    const data = await request.validateUsing(updatePostValidator)
 
     return post.merge(data).save()
   }

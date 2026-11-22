@@ -16,6 +16,9 @@ export const createPostValidator = vine.compile(
 )
 
 export const updatePostValidator = vine.create({
+  params: vine.object({
+    id: vine.number(),
+  }),
   title: vine.string().optional(),
   body: vine.string().optional(),
   status: vine.enum(['draft', 'published']).optional(),
