@@ -60,6 +60,7 @@ router.group(() => {
   router.get('/generic', [TypesController, 'generic'])
   router.get('/generic-types', [TypesController, 'genericTypes'])
   router.get('/bundled', [TypesController, 'bundled'])
+  router.get('/empty', [TypesController, 'empty'])
   router.get('/error-only', [TypesController, 'errorOnly'])
 })
   .prefix('/types')

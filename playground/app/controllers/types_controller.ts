@@ -3,6 +3,7 @@ import encryption from '@adonisjs/core/services/encryption'
 import { DateTime } from 'luxon'
 import { Money } from '#types/money'
 import { issueToken } from '#types/bundled/index'
+import type { EmptyObject } from '#types/empty_object'
 
 enum Visibility {
   Public = 'public',
@@ -125,6 +126,10 @@ export default class TypesController {
     return {
       token: issueToken('api'),
     }
+  }
+
+  async empty({ response }: HttpContext) {
+    return response.ok({} as EmptyObject)
   }
 
   async errorOnly({ response }: HttpContext) {

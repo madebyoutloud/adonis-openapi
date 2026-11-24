@@ -332,6 +332,8 @@ export class Route {
 
   private isBodyfulResponse(type: Context['type']): boolean {
     if (type.isUnknown() || type.isNever() || type.isVoid() || type.isUndefined()) return false
+    // A handler gives the type its schema, so `{}` from a handler is still a body.
+    if (this.context.hasHandler(type)) return true
     if (type.isObject() && !type.isArray() && type.getProperties().length === 0) return false
     return true
   }
