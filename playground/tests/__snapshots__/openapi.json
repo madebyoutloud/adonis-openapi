@@ -244,6 +244,10 @@
         "pattern": "^-?\\d+(\\.\\d+)?$",
         "type": "string"
       },
+      "EmptyObject": {
+        "additionalProperties": false,
+        "type": "object"
+      },
       "FilesUploadResponse": {
         "properties": {
           "name": {
@@ -579,6 +583,9 @@
           "timestamp"
         ],
         "type": "object"
+      },
+      "TypesEmptyResponse": {
+        "$ref": "#/components/schemas/EmptyObject"
       },
       "TypesGenericResponse": {
         "properties": {
@@ -1655,6 +1662,25 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/TypesCustomResponse"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "Types"
+        ]
+      }
+    },
+    "/types/empty": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TypesEmptyResponse"
                 }
               }
             },

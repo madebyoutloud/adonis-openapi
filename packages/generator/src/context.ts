@@ -155,6 +155,10 @@ export class Context {
       type.getCallSignatures().length === 0
   }
 
+  hasHandler(type: TsMorph.Type) {
+    return !!this.data.handlers.match(type, this)
+  }
+
   async toSchema(type = this.type, options: SchemaOptions = {}): Promise<SchemaObject> {
     // with omitted properties it is not the declared type anymore
     const reference = options.omit ? undefined : Reference.fromType(type)
